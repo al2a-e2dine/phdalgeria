@@ -1,0 +1,26 @@
+			<?php
+			$visitor_ip=$_SERVER['REMOTE_ADDR'];
+			$date=date("Y-m-d");
+
+			$qq="SELECT * FROM `counter` WHERE `ip_adr`='$visitor_ip' and visit_date like '%$date%'";
+			$rr=mysqli_query($dbc,$qq);
+			$numm=mysqli_num_rows($rr);
+			if($numm == 0){
+			$add="INSERT INTO `counter`(`ip_adr`,`visit_date`) VALUES ('$visitor_ip','$date')";
+			$res=mysqli_query($dbc,$add);
+			}
+
+		    $q="SELECT * FROM `counter`";
+		    $r=mysqli_query($dbc,$q);
+		    $num=mysqli_num_rows($r);
+		    ?>
+
+			<!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; <a href="https://www.instagram.com/theaccoladetech/" target="_blank">Accolade Tech</a> || Nombre de visiteurs : <?= $num ?></span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->

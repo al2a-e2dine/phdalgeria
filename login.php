@@ -37,7 +37,15 @@ if (isset($_POST['submit'])) {
         $_SESSION['user_firstname']=$row['firstname'];
         $_SESSION['user_lastname']=$row['lastname'];
         $_SESSION['user_phone']=$row['phone'];
+
+        $_SESSION['user_bio']=$row['bio'];
+        $_SESSION['user_linkedin']=$row['linkedin'];
+        $_SESSION['user_twitter']=$row['twitter'];
+        $_SESSION['user_instagram']=$row['instagram'];
+        $_SESSION['user_facebook']=$row['facebook'];
+
         $_SESSION['user_email']=$row['email'];
+        $_SESSION['ali_baba']=$row['password'];
         $_SESSION['user_date']=$row['date'];
 
         header('location: index.php');
@@ -72,7 +80,7 @@ if (isset($_POST['submit'])) {
 
 </head>
 
-<body class="bg-gradient-primary">
+<body class="bg-gradient-white">
 
     <div class="container">
 

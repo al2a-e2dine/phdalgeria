@@ -1,16 +1,33 @@
 <?php
-session_start();
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-}
-
-$pageName=$_SESSION['user_firstname']." ".$_SESSION['user_lastname'];
 include_once 'connect.php';
-
-
 include 'function_inc.php';
 
+session_start();
 
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+}else{
+    $user_id=$_SESSION['user_id'];
+}
+
+if (isset($_GET['id'])) {
+    $id=$_GET['id'];
+
+    $user_q="SELECT * FROM `users` where id='$id'";
+    $user_r=mysqli_query($dbc,$user_q);
+    $nbr_user=mysqli_num_rows($user_r);
+
+    if ($nbr_user==0) {
+        header('Location: index.php');
+    }
+
+}else{
+    header('Location: index.php');
+}
+
+$user_info=getInfoById('users', $id);
+
+$pageName=$user_info['firstname']." ".$user_info['lastname'];
 
 if (isset($_POST['submit'])) {
     $user_id=$_SESSION['user_id'];
@@ -59,6 +76,8 @@ if (isset($_POST['submit'])) {
     <!-- Custom styles for this page -->
     <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
 </head>
 
 <body id="page-top">
@@ -84,100 +103,36 @@ if (isset($_POST['submit'])) {
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800 text-center"><?= $pageName ?></h1>
+                    <div class="text-center">
+                    <h1 class="h3 mb-2 text-gray-800"><?= $pageName ?></h1>
+                    <?php if($user_info['bio']!=""){ ?>
+                    <h4><b>Bio : </b><?= $user_info['bio'] ?></h4>
+                    <?php } ?>
+                    <h4><b>Adresse e-mail : </b><?= $user_info['email'] ?></h4>
+                    <h4><b>Numéro de téléphone : </b></i> <?= $user_info['phone'] ?></h4>
+                    <h4>
+                        <?php if($user_info['linkedin']!=""){ ?>
+                        <a href="<?= $user_info['linkedin'] ?>" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        <?php } ?>
+                        <?php if($user_info['twitter']!=""){ ?>
+                        <a href="<?= $user_info['twitter'] ?>" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <?php } ?>
+                        <?php if($user_info['instagram']!=""){ ?>
+                        <a href="<?= $user_info['instagram'] ?>" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <?php } ?>
+                        <?php if($user_info['facebook']!=""){ ?>
+                        <a href="<?= $user_info['facebook'] ?>" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <?php } ?>
+                    </h4>
+                    </div>
+
                     <hr>
-                    <a class="btn btn-primary btn-block mb-2" href="" data-toggle="modal" data-target="#upload">Enrichir le site</a>
-
-                            <?php 
-                            if(isset($msg)){ ?>
-                                <div class="alert alert-info">
-                                  <strong>PHD Algeria!</strong> <?= $msg ?>
-                                </div>
-                            <?php } ?>
-
-                            <?php 
-                            if(isset($_GET['upload'])){ ?>
-                                <div class="alert alert-info">
-                                  <strong>PHD Algeria!</strong> Le fichier a été téléchargé avec succès
-                                </div>
-                            <?php } ?>
-
-                            <?php 
-                            if(isset($_GET['delete'])){ ?>
-                                <div class="alert alert-info">
-                                  <strong>PHD Algeria!</strong> Le fichier a été supprimé avec succès
-                                </div>
-                            <?php } ?>
-
-                <!-- The Modal -->
-              <div class="modal fade" id="upload">
-                <div class="modal-dialog modal-lg">
-                  <div class="modal-content">
-                  
-                    <!-- Modal Header -->
-                    <div class="modal-header">
-                      <h4 class="modal-title">Enrichir le site</h4>
-                      <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
                     
-                    <!-- Modal body -->
-                    <div class="modal-body">
-                      <form class="user" action="profile.php" method="post" enctype="multipart/form-data">
-
-                                <div class="form-group">
-                                <select class="form-control" name="domaine" required>
-                                <option value="">Choisir un domaine</option>
-                                <option value="Mathématique et Informatique">Mathématique et Informatique</option>
-                                </select>
-                                </div>
-
-                                <div class="form-group">
-                                <select class="form-control" name="filiere" required>
-                                <option value="">Choisir la filière</option>
-                                <option value="Informatique">Informatique</option>
-                                </select>
-                                </div>
-
-                                <div class="form-group">
-                                <select class="form-control" name="wilaya" required>
-                                <option value="">Ce fichier est pour la wilaya</option>
-                                <?php
-                                $q="SELECT DISTINCT wilaya_name,id FROM `algeria_cities`";
-                                $r=mysqli_query($dbc,$q);
-                                while($row=(mysqli_fetch_assoc($r))){ ?>
-                                
-                                    <option value="<?= $row['id'] ?>"><?= $row['id']."-".$row['wilaya_name'] ?></option>
-                                <?php } ?>
-                                </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <input type="text" class="form-control form-control-user" name="title"
-                                        placeholder="Titre de ce fichier" required>
-                                </div>
-                                <div class="form-group">
-                                    <input type="URL" class="form-control form-control-user" name="url"
-                                        placeholder="Si vous possédez le lien des fichiers dans Google Drive ou le lien YouTube">
-                                </div>
-
-                                <p class="text-center"><span style="color: red">OR</span> Upload des fichiers (jpg, docx, xlsx, pptx, pdf, zip, rar)</p>
-                                 <div class="custom-file mb-3">
-                                 <input type="file" class="custom-file-input" id="customFile" name="fileToUpload">
-                                 <label class="custom-file-label" for="customFile">Choisir un fichier </label>
-                                 </div>
-
-                                <input type="submit" name="submit" class="btn btn-primary btn-user btn-block" value="Enrichir le site">
-                            </form>
-                    </div>
-                    
-                    <!-- Modal footer  -->
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
-                    
-                  </div>
-                </div>
-              </div>
+                    <?php
+                    if ($user_id==$id) {
+                        include('add_file.php');
+                    }
+                   ?>
 
                     <br> 
 
@@ -195,16 +150,17 @@ if (isset($_POST['submit'])) {
                                             <th>Titre</th>
                                             <th>Wilaya</th>
                                             <th>Date</th>
-                                            <th>Par</th>
                                             <th>Voir</th>
                                             <th>Télécharger</th>
+                                            <?php if($user_id==$id){ ?>
                                             <th>Supprimer</th>
+                                            <?php } ?>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $user_id=$_SESSION['user_id'];
-                                        $q2="SELECT * FROM `files` where user_id='$user_id' and archived=0";
+                                        //$user_id=$_SESSION['user_id'];
+                                        $q2="SELECT * FROM `files` where user_id='$id' and archived=0";
                                         $r2=mysqli_query($dbc,$q2);
                                         while ($row2=mysqli_fetch_assoc($r2)) {
                                             $id_wilaya=$row2['wilaya'];
@@ -218,7 +174,6 @@ if (isset($_POST['submit'])) {
                                             <td><?= $row2['title'] ?></td>
                                             <td><?= $wilaya_data['wilaya_name'] ?></td>
                                             <td><?= $row2['date'] ?></td>
-                                            <td><?= $user_data['firstname']." ".$user_data['lastname'] ?></td>
                                             <?php if ($row2['url']) { ?>
                                                     <td>
                                                         <a class="btn btn-dark btn-block" href="<?= $row2['url'] ?>" target="_blank">Voir</a>
@@ -238,9 +193,13 @@ if (isset($_POST['submit'])) {
                                                         <button class="btn btn-success btn-block" href="" disabled>Télécharger</button>
                                                     </td>
                                             <?php } ?>
+
+                                            <?php if($user_id==$id){ ?>
                                             <td>
                                                 <a class="btn btn-danger btn-block" href="delete_file.php?id=<?= $row2['id'] ?>">Supprimer</a>
                                             </td>
+                                            <?php } ?>
+                                            
                                         </tr>
                                         <?php } ?>
                                     </tbody>
@@ -290,3 +249,28 @@ if (isset($_POST['submit'])) {
 </body>
 
 </html>
+
+<script>
+$(document).ready(function(){
+ $('.action').change(function(){
+  if($(this).val() != '')
+  {
+   var action = $(this).attr("id");
+   var query = $(this).val();
+   var result = '';
+   if(action == "domaine")
+   {
+    result = 'filiere';
+   }
+   $.ajax({
+    url:"fetch.php",
+    method:"POST",
+    data:{action:action, query:query},
+    success:function(data){
+     $('#'+result).html(data);
+    }
+   })
+  }
+ });
+});
+</script>

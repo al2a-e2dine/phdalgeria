@@ -31,6 +31,38 @@ if (isset($_POST['submit'])) {
     $result=mysqli_query($dbc,$query);
     header('Location: index.php?upload');
 }
+
+if (isset($_POST['filtrer'])) {
+    $domaine=$_POST['domaine'];
+    $filiere=$_POST['filiere'];
+    $wilaya=$_POST['wilaya'];
+
+    if ($domaine and $filiere and $wilaya) {
+        $q2="SELECT * FROM `files` WHERE `domaine`='$domaine' and `filiere`='$filiere' and `wilaya`='$wilaya' and archived=0";
+    }elseif ($domaine and !$filiere and !$wilaya) {
+        $q2="SELECT * FROM `files` WHERE `domaine`='$domaine' and archived=0";
+    }elseif ($domaine and $filiere and !$wilaya) {
+        $q2="SELECT * FROM `files` WHERE `domaine`='$domaine' and `filiere`='$filiere' and archived=0";
+    }elseif ($domaine and !$filiere and $wilaya) {
+        $q2="SELECT * FROM `files` WHERE `domaine`='$domaine' and `wilaya`='$wilaya' and archived=0";
+    }elseif (!$domaine and $filiere and !$wilaya) {
+        $q2="SELECT * FROM `files` WHERE `filiere`='$filiere' and archived=0";
+    }elseif (!$domaine and $filiere and $wilaya) {
+        $q2="SELECT * FROM `files` WHERE `filiere`='$filiere' and `wilaya`='$wilaya' and archived=0";
+    }elseif (!$domaine and !$filiere and $wilaya) {
+        $q2="SELECT * FROM `files` WHERE `wilaya`='wilaya'";
+    }else{
+        $q2="SELECT * FROM `files` where archived=0";
+    }
+
+    //echo $q2;exit();
+    $r2=mysqli_query($dbc,$q2);
+
+
+    }else{
+        $q2="SELECT * FROM `files` where archived=0";
+        $r2=mysqli_query($dbc,$q2);
+    }
  ?>
 
 <!DOCTYPE html>
@@ -93,42 +125,23 @@ if (isset($_POST['submit'])) {
                         « إنما الصدقات للفقراء والمساكين والعاملين عليها والمؤلفة قلوبهم وفي الرقاب والغارمين وفي سبيل الله وابن السبيل فريضة من الله والله عليم حكيم - التوبة »
                     </div>
                     <hr>
-                    <?php
-                        if (isset($_SESSION['user_id'])) { ?>
-                    <a class="btn btn-primary btn-block mb-2" href="" data-toggle="modal" data-target="#upload">Enrichir le site</a>
-
-                            <?php 
-                            if(isset($msg)){ ?>
-                                <div class="alert alert-info">
-                                  <strong>PHD Algeria!</strong> <?= $msg ?>
-                                </div>
-                            <?php } ?>
-
-                            <?php 
-                            if(isset($_GET['upload'])){ ?>
-                                <div class="alert alert-info">
-                                  <strong>PHD Algeria!</strong> Le fichier a été téléchargé avec succès
-                                </div>
-                            <?php } ?>
-
-                <!-- The Modal -->
-              <div class="modal fade" id="upload">
-                <div class="modal-dialog modal-lg">
-                  <div class="modal-content">
-                  
-                    <!-- Modal Header -->
-                    <div class="modal-header">
-                      <h4 class="modal-title">Enrichir le site</h4>
-                      <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
                     
-                    <!-- Modal body -->
-                    <div class="modal-body">
-                      <form class="user" action="index.php" method="post" enctype="multipart/form-data">
+                   <?php
+                   include('add_file.php');
+                   ?>
 
+                    <br> 
+
+                    <form class="user" action="index.php" method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-sm">
                                 <div class="form-group">
-                                <select class="form-control action" name="domaine" id="domaine" required>
+                                <select class="form-control action" name="domaine" id="domaine">
+                                    <?php if($domaine){ $domaine_info=getInfoById('domaine',$domaine); ?>
+                                        <option value="<?= $domaine_info['id'] ?>"><?= $domaine_info['domaine'] ?></option>
+                                    <?php }else{ ?>
                                 <option value="">Choisir un domaine</option>
+                                <?php } ?>
                                 <?php 
                                     $qd="SELECT * FROM `domaine`";
                                     $rd=mysqli_query($dbc,$qd);
@@ -137,16 +150,26 @@ if (isset($_POST['submit'])) {
                                     <?php } ?>
                                 </select>
                                 </div>
-
+                            </div>
+                            <div class="col-sm">
                                 <div class="form-group">
-                                <select class="form-control action" name="filiere" id="filiere" required>
+                                <select class="form-control action" name="filiere" id="filiere">
+                                    <?php if($filiere){ $filiere_info=getInfoById('filiere',$filiere); ?>
+                                        <option value="<?= $filiere_info['id'] ?>"><?= $filiere_info['filiere'] ?></option>
+                                    <?php }else{ ?>
                                 <option value="">Choisir la filière</option>
+                                     <?php } ?>
                                 </select>
                                 </div>
-
+                            </div>
+                            <div class="col-sm">
                                 <div class="form-group">
-                                <select class="form-control" name="wilaya" required>
+                                <select class="form-control" name="wilaya">
+                                    <?php if($wilaya){ $wilaya_info=getInfoById('algeria_cities',$wilaya); ?>
+                                        <option value="<?= $wilaya_info['id'] ?>"><?= $wilaya_info['wilaya_name'] ?></option>
+                                    <?php }else{ ?>
                                 <option value="">Ce fichier est pour la wilaya</option>
+                                <?php } ?>
                                 <?php
                                 $q="SELECT DISTINCT wilaya_name,id FROM `algeria_cities`";
                                 $r=mysqli_query($dbc,$q);
@@ -156,39 +179,14 @@ if (isset($_POST['submit'])) {
                                 <?php } ?>
                                 </select>
                                 </div>
-
-                                <div class="form-group">
-                                    <input type="text" class="form-control form-control-user" name="title"
-                                        placeholder="Titre de ce fichier" required>
-                                </div>
-                                <div class="form-group">
-                                    <input type="URL" class="form-control form-control-user" name="url"
-                                        placeholder="Si vous possédez le lien des fichiers dans Google Drive ou le lien YouTube">
-                                </div>
-
-                                <p class="text-center"><span style="color: red">OR</span> Upload des fichiers (jpg, docx, xlsx, pptx, pdf, zip, rar)</p>
-                                 <div class="custom-file mb-3">
-                                 <input type="file" class="custom-file-input" id="customFile" name="fileToUpload">
-                                 <label class="custom-file-label" for="customFile">Choisir un fichier </label>
-                                 </div>
-
-                                <input type="submit" name="submit" class="btn btn-primary btn-user btn-block" value="Enrichir le site">
+                            </div>
+                            <div class="col-sm">
+                                <input type="submit" name="filtrer" class="btn btn-primary btn-user btn-block" value="Filtrer">
+                            </div>
+                        </div>
+                                
                             </form>
-                    </div>
-                    
-                    <!-- Modal footer  -->
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
-                    
-                  </div>
-                </div>
-              </div>
-
-              <?php } ?>
-
-                    <br> 
-
+                        <br>
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
@@ -199,9 +197,7 @@ if (isset($_POST['submit'])) {
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
                                             <th>Titre</th>
-                                            <th>Wilaya</th>
                                             <th>Date</th>
                                             <th>Par</th>
                                             <th>Voir</th>
@@ -210,8 +206,7 @@ if (isset($_POST['submit'])) {
                                     </thead>
                                     <tbody>
                                         <?php 
-                                        $q2="SELECT * FROM `files` where archived=0";
-                                        $r2=mysqli_query($dbc,$q2);
+                                        
                                         while ($row2=mysqli_fetch_assoc($r2)) {
                                             $id_wilaya=$row2['wilaya'];
                                             $id_user=$row2['user_id'];
@@ -220,11 +215,13 @@ if (isset($_POST['submit'])) {
                                             $user_data=getInfoById('users',$id_user);
                                             ?>
                                             <tr>
-                                            <td><?= $row2['id'] ?></td>
                                             <td><?= $row2['title'] ?></td>
-                                            <td><?= $wilaya_data['wilaya_name'] ?></td>
                                             <td><?= $row2['date'] ?></td>
-                                            <td><?= $user_data['firstname']." ".$user_data['lastname'] ?></td>
+                                            <td>
+                                                <a href="profile.php?id=<?= $id_user ?>">
+                                                <?= $user_data['firstname']." ".$user_data['lastname'] ?>
+                                                </a>
+                                            </td>
                                             <?php if ($row2['url']) { ?>
                                                     <td>
                                                         <a class="btn btn-dark btn-block" href="<?= $row2['url'] ?>" target="_blank">Voir</a>
@@ -288,7 +285,7 @@ if (isset($_POST['submit'])) {
     <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script src="js/demo/datatables-demo.js"></script>
+    <!-- <script src="js/demo/datatables-demo.js"></script> -->
 
 </body>
 

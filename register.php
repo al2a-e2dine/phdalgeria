@@ -74,7 +74,7 @@ if($num==0){
 
 </head>
 
-<body class="bg-gradient-primary">
+<body class="bg-gradient-white">
 
     <div class="container">
 
@@ -99,31 +99,32 @@ if($num==0){
                                 <div class="form-group row">
                                     <div class="col-sm-6 mb-3 mb-sm-0">
                                         <input type="text" class="form-control form-control-user" name="firstname"
-                                            placeholder="Prénom">
+                                            placeholder="Prénom" required>
                                     </div>
                                     <div class="col-sm-6">
                                         <input type="text" class="form-control form-control-user" name="lastname"
-                                            placeholder="Nom">
+                                            placeholder="Nom" required>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <input type="number" class="form-control form-control-user" name="phone"
-                                        placeholder="Numéro de téléphone">
+                                        placeholder="Numéro de téléphone" required>
                                 </div>
                                 <div class="form-group">
                                     <input type="email" class="form-control form-control-user" name="email"
-                                        placeholder="Adresse e-mail">
+                                        placeholder="Adresse e-mail" required>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-6 mb-3 mb-sm-0">
                                         <input type="password" class="form-control form-control-user"
-                                            name="password" placeholder="Mot de passe">
+                                            name="password" placeholder="Mot de passe" required>
                                     </div>
                                     <div class="col-sm-6">
                                         <input type="password" class="form-control form-control-user"
-                                            name="cpassword" placeholder="Répéter le mot de passe">
+                                            name="cpassword" placeholder="Répéter le mot de passe" required>
                                     </div>
                                 </div>
+                                <p>En appuyant sur "Créer un compte", vous acceptez nos Conditions générales, notre Politique d’utilisation des données et notre <a href="privacypolicy.php">Politique d’utilisation</a>.</p>
                                 <input type="submit" name="submit" class="btn btn-primary btn-user btn-block" value="Créer un compte">
                             </form>
                             <hr>

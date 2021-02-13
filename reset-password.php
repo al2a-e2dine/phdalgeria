@@ -60,7 +60,7 @@ session_start();
 
 </head>
 
-<body class="bg-gradient-primary">
+<body class="bg-gradient-white">
 
     <div class="container">
 

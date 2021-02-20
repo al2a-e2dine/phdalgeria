@@ -1,15 +1,22 @@
 <?php 
-$pageName="S'identifier";
-include_once 'connect.php';
 session_start();
+include_once 'connect.php';
+include "config.php";
+include 'g_config.php';
+
+
+$pageName=$lang['15'];
+
+include('google_login.php');
+
 
 if (isset($_SESSION['user_id'])) {
     header('Location: index.php');
 }
 
 if (isset($_POST['submit'])) {
-    $email=$_POST['email'];
-    $password=$_POST['password'];
+    $email=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['email'])));
+    $password=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['password'])));
     $password=md5($password);
 
     $q="SELECT * FROM `users` WHERE `email`='$email' and `password`='$password'";
@@ -50,7 +57,7 @@ if (isset($_POST['submit'])) {
 
         header('location: index.php');
     }else{
-        $msg="Il y a une erreur dans l'e-mail ou le mot de passe";
+        $msg=$lang['49'];
     }
 }
 
@@ -91,7 +98,7 @@ if (isset($_POST['submit'])) {
                     <div class="col-lg">
                         <div class="p-5">
                             <div class="text-center">
-                                <h1 class="h4 text-gray-900 mb-4">Nous saluons le retour!</h1>
+                                <h1 class="h4 text-gray-900 mb-4"><?= $lang['50'] ?></h1>
                             </div>
 
                             <?php 
@@ -104,59 +111,63 @@ if (isset($_POST['submit'])) {
                             <?php 
                             if(isset($_GET['success'])){ ?>
                                 <div class="alert alert-info">
-                                  <strong>PHD Algeria!</strong> Vous avez été enregistré! Veuillez vérifier votre email!
+                                  <strong>PHD Algeria!</strong> <?= $lang['51'] ?>
                                 </div>
                             <?php } ?>
 
                             <?php 
                             if(isset($_GET['success2'])){ ?>
                                 <div class="alert alert-info">
-                                  <strong>PHD Algeria!</strong> Votre compte est activé, vous pouvez vous connecter
+                                  <strong>PHD Algeria!</strong> <?= $lang['52'] ?>
                                 </div>
                             <?php } ?>
 
                             <?php 
                             if(isset($_GET['success3'])){ ?>
                                 <div class="alert alert-info">
-                                  <strong>PHD Algeria!</strong> Le mot de passe a été changé avec succès
+                                  <strong>PHD Algeria!</strong> <?= $lang['53'] ?>
                                 </div>
                             <?php } ?>
 
                             <?php 
                             if(isset($_GET['archived'])){ ?>
                                 <div class="alert alert-info">
-                                  <strong>PHD Algeria!</strong> Votre compte a été supprimé. Vous ne pouvez pas vous connecter
+                                  <strong>PHD Algeria!</strong> <?= $lang['54'] ?>
                                 </div>
                             <?php } ?>
 
                             <?php 
                             if(isset($_GET['active'])){ ?>
                                 <div class="alert alert-info">
-                                  <strong>PHD Algeria!</strong> Votre compte n'est pas activé, vérifiez votre Email
+                                  <strong>PHD Algeria!</strong> <?= $lang['55'] ?>
                                 </div>
                             <?php } ?>
 
                             <form class="user" action="login.php" method="post">
                                 <div class="form-group">
                                     <input type="email" class="form-control form-control-user" name="email"
-                                        placeholder="Adresse e-mail">
+                                        placeholder="<?= $lang['56'] ?>">
                                 </div>
                                 <div class="form-group">
                                     <input type="password" class="form-control form-control-user"
-                                            name="password" placeholder="Mot de passe">
+                                            name="password" placeholder="<?= $lang['57'] ?>">
                                 </div>
 
-                                <input type="submit" name="submit" class="btn btn-primary btn-user btn-block" value="S'identifier">
+                                <input type="submit" name="submit" class="btn btn-primary btn-user btn-block" value="<?= $lang['15'] ?>">
                             </form>
                             <hr>
+                                        <a href="<?= $google_client->createAuthUrl() ?>" class="btn btn-google btn-user btn-block">
+                                            <i class="fab fa-google fa-fw"></i> Login with Google
+                                        </a>
+                            <hr>
                             <div class="text-center">
-                                <a class="small" href="index.php">Page d'accueil</a>
+                                <a class="small" href="index.php"><?= $lang['46'] ?></a>
                             </div>
                             <div class="text-center">
-                                <a class="small" href="forgot-password.php">Mot de passe oublié?</a>
+                                <a class="small" href="forgot-password.php"><?= $lang['39'] ?> ?</a>
                             </div>
                             <div class="text-center">
-                                <a class="small" href="register.php">Créer un compte!</a>
+                                <a class="small" href="register.php"><?= $lang['47'] ?></a>
                             </div>
                         </div>
                     </div>

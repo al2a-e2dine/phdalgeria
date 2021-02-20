@@ -1,7 +1,9 @@
 <?php 
-$pageName="Politique d’utilisation";
-include_once 'connect.php';
 session_start();
+include_once 'connect.php';
+include "config.php";
+$pageName=$lang['58'];
+
 
 include 'function_inc.php';
 
@@ -75,13 +77,13 @@ include 'function_inc.php';
 
 
                     
-                    <p>Il s'agit de la politique de confidentialité la plus simple au monde. Ce document doit vous expliquer pourquoi l'application collecte certaines informations, ce qui se passe lorsque votre compte est supprimé et certaines autres questions fréquemment posées concernant votre vie privée.</p>
+                    <p><?= $lang['59'] ?></p>
                     <hr>
-                    <h3>Quelles informations identifiables sont stockées sur moi?</h3>
-                    <p>Votre nom et votre adresse e-mail sont stockés avec vos informations d'utilisateur, et bien sûr, toutes les informations que vous saisissez dans votre profil sont également stockées dans la base de données.</p>
+                    <h3><?= $lang['60'] ?></h3>
+                    <p><?= $lang['61'] ?></p>
                     <hr>
-                    <h3>Comment tout cela est-il gratuit? Il doit y avoir un hic!</h3>
-                    <p>Absolument aucun piège à ce billet de faveur. Ce projet est juste ma façon de redonner à la communauté dont j'ai tant appris. Cependant, si vous souhaitez montrer votre appréciation, vous pouvez me suivre sur mes réseaux sociaux et me dire à quel point cela vous a aidé, ou faire un don pour aider à payer les factures de cloud, ou si vous êtes un autre développeur, vous pouvez m'envoyer un e-mail directement..</p>
+                    <h3><?= $lang['62'] ?></h3>
+                    <p><?= $lang['63'] ?></p>
                 
 
                     <img class="img-fluid mx-auto d-block img-thumbnail" src="img/privacypolicy.png" alt="privacy policy">

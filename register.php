@@ -1,23 +1,32 @@
 <?php 
-$pageName="S'inscrire";
-include_once 'connect.php';
 session_start();
+include_once 'connect.php';
+include "config.php";
+include 'g_config.php';
+
+
+$pageName=$lang['14'];
+
 
 if (isset($_SESSION['user_id'])) {
     header('Location: index.php');
 }
 
+include('google_login.php');
+
 if(isset($_POST['submit'])){
-$firstname=$_POST['firstname'];
-$lastname=$_POST['lastname'];
-$phone=$_POST['phone'];
-$email=$_POST['email'];
-$password=$_POST['password'];
-$cpassword=$_POST['cpassword'];
+$firstname=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['firstname'])));
+$lastname=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['lastname'])));
+$phone=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['phone'])));
+$email=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['email'])));
+$password=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['password'])));
+$cpassword=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['cpassword'])));
 
 $q="SELECT * FROM `users` WHERE `email`='$email'";
 $r=mysqli_query($dbc,$q);
 $num=mysqli_num_rows($r);
+
+
 
 if($num==0){
     if($password==$cpassword){
@@ -26,25 +35,227 @@ if($num==0){
       $token = 'qwertzuiopasdfghjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM0123456789!$/()*';
             $token = str_shuffle($token);
       $token = substr($token, 0, 30);
-      $message="
-      Veuillez cliquer sur le lien ci-dessous:
-      http://localhost/phdalgeria/confirm.php?email=".$email."&token=".$token;
+
+      //$from = 'theaccoladetech@gmail.com';
+
+      // To send HTML mail, the Content-type header must be set
+        $headers  = 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+
+        
+
+      //$message=$lang['40']." phdalgeria.com/confirm.php?email=".$email."&token=".$token;
+
+      // Compose a simple HTML email message
+        $message = '
+        <!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <style type="text/css">
+        @media screen {
+            @font-face {
+                font-family: "Lato";
+                font-style: normal;
+                font-weight: 400;
+                src: local("Lato Regular"), local("Lato-Regular"), url(https://fonts.gstatic.com/s/lato/v11/qIIYRU-oROkIk8vfvxw6QvesZW2xOQ-xsNqO47m55DA.woff) format("woff");
+            }
+
+            @font-face {
+                font-family: "Lato";
+                font-style: normal;
+                font-weight: 700;
+                src: local("Lato Bold"), local("Lato-Bold"), url(https://fonts.gstatic.com/s/lato/v11/qdgUG4U09HnJwhYI-uK18wLUuEpTyoUstqEm5AMlJo4.woff) format("woff");
+            }
+
+            @font-face {
+                font-family: "Lato";
+                font-style: italic;
+                font-weight: 400;
+                src: local("Lato Italic"), local("Lato-Italic"), url(https://fonts.gstatic.com/s/lato/v11/RYyZNoeFgb0l7W3Vu1aSWOvvDin1pK8aKteLpeZ5c0A.woff) format("woff");
+            }
+
+            @font-face {
+                font-family: "Lato";
+                font-style: italic;
+                font-weight: 700;
+                src: local("Lato Bold Italic"), local("Lato-BoldItalic"), url(https://fonts.gstatic.com/s/lato/v11/HkF_qI1x_noxlxhrhMQYELO3LdcAZYWl9Si6vvxL-qU.woff) format("woff");
+            }
+        }
+
+        /* CLIENT-SPECIFIC STYLES */
+        body,
+        table,
+        td,
+        a {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
+        table,
+        td {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+
+        img {
+            -ms-interpolation-mode: bicubic;
+        }
+
+        /* RESET STYLES */
+        img {
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+        }
+
+        table {
+            border-collapse: collapse !important;
+        }
+
+        body {
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+        }
+
+        /* iOS BLUE LINKS */
+        a[x-apple-data-detectors] {
+            color: inherit !important;
+            text-decoration: none !important;
+            font-size: inherit !important;
+            font-family: inherit !important;
+            font-weight: inherit !important;
+            line-height: inherit !important;
+        }
+
+        /* MOBILE STYLES */
+        @media screen and (max-width:600px) {
+            h1 {
+                font-size: 32px !important;
+                line-height: 32px !important;
+            }
+        }
+
+        /* ANDROID CENTER FIX */
+        div[style*="margin: 16px 0;"] {
+            margin: 0 !important;
+        }
+    </style>
+</head>
+
+<body style="background-color: #f4f4f4; margin: 0 !important; padding: 0 !important;">
+    <!-- HIDDEN PREHEADER TEXT -->
+    <div style="display: none; font-size: 1px; color: #fefefe; line-height: 1px;  max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;"> We re thrilled to have you here! Get ready to dive into your new account. </div>
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <!-- LOGO -->
+        <tr>
+            <td bgcolor="#FFA73B" align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                    <tr>
+                        <td align="center" valign="top" style="padding: 40px 10px 40px 10px;"> </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td bgcolor="#FFA73B" align="center" style="padding: 0px 10px 0px 10px;">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                    <tr>
+                        <td bgcolor="#ffffff" align="center" valign="top" style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
+                            <h1 style="font-size: 48px; font-weight: 400; margin: 2;">Welcome!</h1> <img src=" https://img.icons8.com/clouds/100/000000/handshake.png" width="125" height="120" style="display: block; border: 0px;" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                    <tr>
+                        <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-size: 18px; font-weight: 400; line-height: 25px;">
+                            <p style="margin: 0;">We re excited to have you get started. First, you need to confirm your account. Just press the button below.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td bgcolor="#ffffff" align="left">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td bgcolor="#ffffff" align="center" style="padding: 20px 30px 60px 30px;">
+                                        <table border="0" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td align="center" style="border-radius: 3px;" bgcolor="#FFA73B"><a href="phdalgeria.com/confirm.php?email='.$email.'&token='.$token.'" target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #FFA73B; display: inline-block;">Confirm Account</a></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr> <!-- COPY -->
+                    <tr>
+                        <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 0px 30px; color: #666666; font-size: 18px; font-weight: 400; line-height: 25px;">
+                            <p style="margin: 0;">If that doesn t work, copy and paste the following link in your browser:</p>
+                        </td>
+                    </tr> <!-- COPY -->
+                    <tr>
+                        <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 20px 30px; color: #666666; font-size: 18px; font-weight: 400; line-height: 25px;">
+                            <p style="margin: 0;"><a href="phdalgeria.com/confirm.php?email='.$email.'&token='.$token.'" target="_blank" style="color: #FFA73B;">phdalgeria.com/confirm.php?email='.$email.'&token='.$token.'</a></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 20px 30px; color: #666666; font-size: 18px; font-weight: 400; line-height: 25px;">
+                            <p style="margin: 0;">If you have any questions, just reply to this email—we re always happy to help out.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 40px 30px; border-radius: 0px 0px 4px 4px; color: #666666; font-size: 18px; font-weight: 400; line-height: 25px;">
+                            <p style="margin: 0;">PHD Algeria Team</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td bgcolor="#f4f4f4" align="center" style="padding: 30px 10px 0px 10px;">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                    <tr>
+                        <td bgcolor="#FFECD1" align="center" style="padding: 30px 30px 30px 30px; border-radius: 4px 4px 4px 4px; color: #666666; font-size: 18px; font-weight: 400; line-height: 25px;">
+                            <h2 style="font-size: 20px; font-weight: 400; color: #111111; margin: 0;">Need more help?</h2>
+                            <p style="margin: 0;"><a href="https://www.instagram.com/theaccoladetech/" target="_blank" style="color: #FFA73B;">We&rsquo;re here to help you out</a></p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>';
+
       
-      if(mail($email,"PHD Algeria",$message)){
+      if(mail($email,"PHD Algeria",$message,$headers)){
+        //echo "oui"; exit();
       $q="INSERT INTO `users`(`firstname`, `lastname`, `phone`, `email`, `password`, `token`) VALUES ('$firstname', '$lastname', '$phone', '$email', '$password', '$token')";
       $r=mysqli_query($dbc,$q);
       if($r){
         header('Location: login.php?success');
       }else{
-        $msg="Il y a un problème pendant le processus d'inscription";
+        $msg=$lang['68'];
       }
         }
 
   }else{
-    $msg="Les deux mots de passe ne sont pas identiques";
+    $msg=$lang['69'];
   }
 }else{
-    $msg="L'adresse email est déjà utilisée";
+    $msg=$lang['70'];
   }
 
 }
@@ -85,13 +296,13 @@ if($num==0){
                     <div class="col-lg">
                         <div class="p-5">
                             <div class="text-center">
-                                <h1 class="h4 text-gray-900 mb-4">Créer un compte!</h1>
+                                <h1 class="h4 text-gray-900 mb-4"><?= $lang['47'] ?></h1>
                             </div>
 
                             <?php 
                             if(isset($msg)){ ?>
                                 <div class="alert alert-info">
-                                  <strong>PHD Algeria!</strong> <?= $msg ?>
+                                  <strong><?= $lang['1'] ?> !</strong> <?= $msg ?>
                                 </div>
                             <?php } ?>
                             
@@ -99,40 +310,44 @@ if($num==0){
                                 <div class="form-group row">
                                     <div class="col-sm-6 mb-3 mb-sm-0">
                                         <input type="text" class="form-control form-control-user" name="firstname"
-                                            placeholder="Prénom" required>
+                                            placeholder="<?= $lang['71'] ?>" required>
                                     </div>
                                     <div class="col-sm-6">
                                         <input type="text" class="form-control form-control-user" name="lastname"
-                                            placeholder="Nom" required>
+                                            placeholder="<?= $lang['72'] ?>" required>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <input type="number" class="form-control form-control-user" name="phone"
-                                        placeholder="Numéro de téléphone" required>
+                                        placeholder="<?= $lang['65'] ?>" required>
                                 </div>
                                 <div class="form-group">
                                     <input type="email" class="form-control form-control-user" name="email"
-                                        placeholder="Adresse e-mail" required>
+                                        placeholder="<?= $lang['56'] ?>" required>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-6 mb-3 mb-sm-0">
                                         <input type="password" class="form-control form-control-user"
-                                            name="password" placeholder="Mot de passe" required>
+                                            name="password" placeholder="<?= $lang['57'] ?>" required>
                                     </div>
                                     <div class="col-sm-6">
                                         <input type="password" class="form-control form-control-user"
-                                            name="cpassword" placeholder="Répéter le mot de passe" required>
+                                            name="cpassword" placeholder="<?= $lang['73'] ?>" required>
                                     </div>
                                 </div>
-                                <p>En appuyant sur "Créer un compte", vous acceptez nos Conditions générales, notre Politique d’utilisation des données et notre <a href="privacypolicy.php">Politique d’utilisation</a>.</p>
-                                <input type="submit" name="submit" class="btn btn-primary btn-user btn-block" value="Créer un compte">
+                                <p><?= $lang['74'] ?> <a href="privacypolicy.php"><?= $lang['75'] ?></a>.</p>
+                                <input type="submit" name="submit" class="btn btn-primary btn-user btn-block" value="<?= $lang['47'] ?>">
                             </form>
                             <hr>
+                            <a href="<?= $google_client->createAuthUrl() ?>" class="btn btn-google btn-user btn-block">
+                                            <i class="fab fa-google fa-fw"></i> Login with Google
+                                        </a>
+                            <hr>
                             <div class="text-center">
-                                <a class="small" href="index.php">Page d'accueil</a>
+                                <a class="small" href="index.php"><?= $lang['46'] ?></a>
                             </div>
                             <div class="text-center">
-                                <a class="small" href="login.php">Vous avez déjà un compte? S'identifier!</a>
+                                <a class="small" href="login.php"><?= $lang['48'] ?></a>
                             </div>
                         </div>
                     </div>

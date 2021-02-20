@@ -1,7 +1,9 @@
 <?php 
-$pageName="PHD Algeria";
-include_once 'connect.php';
 session_start();
+include_once 'connect.php';
+include "config.php";
+$pageName=$lang['1']; 
+
 
 
 
@@ -13,11 +15,11 @@ include 'function_inc.php';
 
 if (isset($_POST['submit'])) {
     $user_id=$_SESSION['user_id'];
-    $domaine=$_POST['domaine'];
-    $filiere=$_POST['filiere'];
-    $wilaya=$_POST['wilaya'];
-    $title=$_POST['title'];
-    $url=$_POST['url'];
+    $domaine=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['domaine'])));
+    $filiere=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['filiere'])));
+    $wilaya=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['wilaya'])));
+    $title=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['title'])));
+    $url=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['url'])));
     include 'uploadfile.php';
 
     if ($url and $file_name) {
@@ -33,26 +35,26 @@ if (isset($_POST['submit'])) {
 }
 
 if (isset($_POST['filtrer'])) {
-    $domaine=$_POST['domaine'];
-    $filiere=$_POST['filiere'];
-    $wilaya=$_POST['wilaya'];
+    $domaine=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['domaine'])));
+    $filiere=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['filiere'])));
+    $wilaya=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['wilaya'])));
 
     if ($domaine and $filiere and $wilaya) {
-        $q2="SELECT * FROM `files` WHERE `domaine`='$domaine' and `filiere`='$filiere' and `wilaya`='$wilaya' and archived=0";
+        $q2="SELECT * FROM `files` WHERE `domaine`='$domaine' and `filiere`='$filiere' and `wilaya`='$wilaya' and archived=0 and safe='1'";
     }elseif ($domaine and !$filiere and !$wilaya) {
-        $q2="SELECT * FROM `files` WHERE `domaine`='$domaine' and archived=0";
+        $q2="SELECT * FROM `files` WHERE `domaine`='$domaine' and archived=0 and safe='1'";
     }elseif ($domaine and $filiere and !$wilaya) {
-        $q2="SELECT * FROM `files` WHERE `domaine`='$domaine' and `filiere`='$filiere' and archived=0";
+        $q2="SELECT * FROM `files` WHERE `domaine`='$domaine' and `filiere`='$filiere' and archived=0 and safe='1'";
     }elseif ($domaine and !$filiere and $wilaya) {
-        $q2="SELECT * FROM `files` WHERE `domaine`='$domaine' and `wilaya`='$wilaya' and archived=0";
+        $q2="SELECT * FROM `files` WHERE `domaine`='$domaine' and `wilaya`='$wilaya' and archived=0 and safe='1'";
     }elseif (!$domaine and $filiere and !$wilaya) {
-        $q2="SELECT * FROM `files` WHERE `filiere`='$filiere' and archived=0";
+        $q2="SELECT * FROM `files` WHERE `filiere`='$filiere' and archived=0 and safe='1'";
     }elseif (!$domaine and $filiere and $wilaya) {
-        $q2="SELECT * FROM `files` WHERE `filiere`='$filiere' and `wilaya`='$wilaya' and archived=0";
+        $q2="SELECT * FROM `files` WHERE `filiere`='$filiere' and `wilaya`='$wilaya' and archived=0 and safe='1'";
     }elseif (!$domaine and !$filiere and $wilaya) {
         $q2="SELECT * FROM `files` WHERE `wilaya`='wilaya'";
     }else{
-        $q2="SELECT * FROM `files` where archived=0";
+        $q2="SELECT * FROM `files` where archived=0 and safe='1'";
     }
 
     //echo $q2;exit();
@@ -60,7 +62,7 @@ if (isset($_POST['filtrer'])) {
 
 
     }else{
-        $q2="SELECT * FROM `files` where archived=0";
+        $q2="SELECT * FROM `files` where archived=0 and safe='1'";
         $r2=mysqli_query($dbc,$q2);
     }
  ?>
@@ -92,9 +94,57 @@ if (isset($_POST['filtrer'])) {
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
+    <!-- Custom styles for this template -->
+    <link href="carousel.css" rel="stylesheet">
+
+    <script>
+    $(document).ready(function(){
+        $("#notification").modal('show');
+    });
+</script>
+
 </head>
 
-<body id="page-top">
+<body id="page-top" class="bg-light">
+
+    <!-- The Modal -->
+  <div class="modal fade" id="notification">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">PHD Algeria Team</h4>
+          <button type="button" class="close" data-dismiss="modal" onclick = "$('.modal').hide()">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body text-center">
+            <!-- <h3>Bienvenue</h3> -->
+            <!-- <p>
+Nous, en tant qu'équipe de production, veillons au développement du site <br>
+Mais nous ne pouvons pas remplir le site avec des leçons dans tous les domaines <br>
+Aidez-nous à enrichir le site</p> -->
+<h3>مرحبا بك</h3>
+<p>
+نحن كفريق الإنتاج نسهر على تطوير الموقع <br>
+لكن لا يمكننا ملأ الموقع بدروس في جميع المجالات <br>
+ساعدنا في إثراء الموقع و أجرك عند الله</p>
+
+            <div class="alert alert-info text-center">
+                صدقة العلم نشره
+                    </div>
+
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
 
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -113,34 +163,61 @@ if (isset($_POST['filtrer'])) {
                     include 'topbar.html';
                 ?>
 
-                
+                <div id="carouselExampleSlidesOnly" class="carousel slide mb-3" data-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+        <img src="img/banner.jpg" class="d-block w-100" alt="banner">
+    </div><!-- 
+    <div class="carousel-item">
+      <img src="img/privacypolicy.png" class="d-block w-100" alt="...">
+    </div>
+    <div class="carousel-item">
+      <img src="img/privacypolicy.png" class="d-block w-100" alt="...">
+    </div> -->
+  </div>
+</div>
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
                     <h1 class="h3 mb-2 text-gray-800 text-center"><?= $pageName ?></h1>
-                    <p class="text-center"><b>PHD Algeria</b> est un site éducatif dont l'objectif de fournir toutes les leçons et synthèses dont l'ingénieur algérien a besoin pour les différentes universités pour préparer le concours de doctorat</p>
+
+                    <p class="text-center"><b><?= $lang['1'] ?></b> <?= $lang['2'] ?></p>
                     <div class="alert alert-info text-center">
                         « إنما الصدقات للفقراء والمساكين والعاملين عليها والمؤلفة قلوبهم وفي الرقاب والغارمين وفي سبيل الله وابن السبيل فريضة من الله والله عليم حكيم - التوبة »
                     </div>
                     <hr>
                     
                    <?php
-                   include('add_file.php');
+                   include'add_file.php';
                    ?>
 
                     <br> 
+
+                        <?php 
+                            if(isset($_GET['errfile'])){ ?>
+                                <div class="alert alert-warning">
+                                  <strong><?= $lang['1'] ?>!</strong> <?= $lang['3'] ?>
+                                </div><br>
+                            <?php } ?>
+
+                            <?php 
+                            if(isset($_GET['report'])){ ?>
+                                <div class="alert alert-warning">
+                                  <strong><?= $lang['1'] ?>!</strong> <?= $lang['97'] ?>
+                                </div><br>
+                            <?php } ?>
 
                     <form class="user" action="index.php" method="post" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col-sm">
                                 <div class="form-group">
-                                <select class="form-control action" name="domaine" id="domaine">
+                                <select class="form-control action" name="domaine" id="domaine2">
                                     <?php if($domaine){ $domaine_info=getInfoById('domaine',$domaine); ?>
                                         <option value="<?= $domaine_info['id'] ?>"><?= $domaine_info['domaine'] ?></option>
                                     <?php }else{ ?>
-                                <option value="">Choisir un domaine</option>
+                                <option value=""><?= $lang['4'] ?></option>
                                 <?php } ?>
                                 <?php 
                                     $qd="SELECT * FROM `domaine`";
@@ -153,11 +230,11 @@ if (isset($_POST['filtrer'])) {
                             </div>
                             <div class="col-sm">
                                 <div class="form-group">
-                                <select class="form-control action" name="filiere" id="filiere">
+                                <select class="form-control action" name="filiere" id="filiere2">
                                     <?php if($filiere){ $filiere_info=getInfoById('filiere',$filiere); ?>
                                         <option value="<?= $filiere_info['id'] ?>"><?= $filiere_info['filiere'] ?></option>
                                     <?php }else{ ?>
-                                <option value="">Choisir la filière</option>
+                                <option value=""><?= $lang['5'] ?></option>
                                      <?php } ?>
                                 </select>
                                 </div>
@@ -168,7 +245,7 @@ if (isset($_POST['filtrer'])) {
                                     <?php if($wilaya){ $wilaya_info=getInfoById('algeria_cities',$wilaya); ?>
                                         <option value="<?= $wilaya_info['id'] ?>"><?= $wilaya_info['wilaya_name'] ?></option>
                                     <?php }else{ ?>
-                                <option value="">Ce fichier est pour la wilaya</option>
+                                <option value=""><?= $lang['6'] ?></option>
                                 <?php } ?>
                                 <?php
                                 $q="SELECT DISTINCT wilaya_name,id FROM `algeria_cities`";
@@ -181,7 +258,7 @@ if (isset($_POST['filtrer'])) {
                                 </div>
                             </div>
                             <div class="col-sm">
-                                <input type="submit" name="filtrer" class="btn btn-primary btn-user btn-block" value="Filtrer">
+                                <input type="submit" name="filtrer" class="btn btn-primary btn-user btn-block" value="<?= $lang['7'] ?>">
                             </div>
                         </div>
                                 
@@ -190,18 +267,19 @@ if (isset($_POST['filtrer'])) {
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">PHD Algeria</h6>
+                            <h6 class="m-0 font-weight-bold text-primary"><?= $lang['1'] ?></h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Titre</th>
-                                            <th>Date</th>
-                                            <th>Par</th>
-                                            <th>Voir</th>
-                                            <th>Télécharger</th>
+                                            <th><?= $lang['8'] ?></th>
+                                            <th><?= $lang['9'] ?></th>
+                                            <th><?= $lang['10'] ?></th>
+                                            <th><?= $lang['11'] ?></th>
+                                            <th><?= $lang['12'] ?></th>
+                                            <th><?= $lang['96'] ?></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -224,23 +302,26 @@ if (isset($_POST['filtrer'])) {
                                             </td>
                                             <?php if ($row2['url']) { ?>
                                                     <td>
-                                                        <a class="btn btn-dark btn-block" href="<?= $row2['url'] ?>" target="_blank">Voir</a>
+                                                        <a class="btn btn-dark btn-block" href="<?= $row2['url'] ?>" target="_blank"><?= $lang['11'] ?></a>
                                                     </td>
                                             <?php }else{ ?>
                                                 <td>
-                                                    <button class="btn btn-dark btn-block" href="" disabled>Voir</button>
+                                                    <button class="btn btn-dark btn-block" href="" disabled><?= $lang['11'] ?></button>
                                                 </td>
                                             <?php } ?>
 
                                             <?php if ($row2['path']) { ?>
                                                     <td>
-                                                        <a class="btn btn-success btn-block" href="<?= $row2['path'] ?>" target="_blank">Télécharger</a>
+                                                        <a class="btn btn-success btn-block" href="<?= $row2['path'] ?>" target="_blank"><?= $lang['12'] ?></a>
                                                     </td>
                                             <?php }else{ ?>
                                                 <td>
-                                                        <button class="btn btn-success btn-block" href="" disabled>Télécharger</button>
+                                                        <button class="btn btn-success btn-block" href="" disabled><?= $lang['12'] ?></button>
                                                     </td>
                                             <?php } ?>
+                                            <td>
+                                                <a class="btn btn-warning btn-block" href="report.php?fid=<?= $row2['id'] ?>"><?= $lang['96'] ?></a>
+                                            </td>
                                         </tr>
                                         <?php } ?>
                                     </tbody>
@@ -285,7 +366,7 @@ if (isset($_POST['filtrer'])) {
     <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <!-- <script src="js/demo/datatables-demo.js"></script> -->
+    <script src="js/demo/datatables-demo.js"></script>
 
 </body>
 
@@ -305,6 +386,31 @@ $(document).ready(function(){
    }
    $.ajax({
     url:"fetch.php",
+    method:"POST",
+    data:{action:action, query:query},
+    success:function(data){
+     $('#'+result).html(data);
+    }
+   })
+  }
+ });
+});
+</script>
+
+<script>
+$(document).ready(function(){
+ $('.action').change(function(){
+  if($(this).val() != '')
+  {
+   var action = $(this).attr("id");
+   var query = $(this).val();
+   var result = '';
+   if(action == "domaine2")
+   {
+    result = 'filiere2';
+   }
+   $.ajax({
+    url:"fetch2.php",
     method:"POST",
     data:{action:action, query:query},
     success:function(data){

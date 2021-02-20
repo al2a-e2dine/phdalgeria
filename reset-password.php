@@ -1,7 +1,9 @@
 <?php 
-$pageName="Réinitialiser le mot de passe";
-include_once 'connect.php';
 session_start();
+include_once 'connect.php';
+include "config.php";
+$pageName=$lang['45'];
+
 
     if (!isset($_GET['email']) || !isset($_GET['token'])) {
         header('Location: register.php');
@@ -17,8 +19,8 @@ session_start();
         $row=mysqli_fetch_assoc($r);
         $user_id=$row['id'];
         if (isset($_POST['submit'])) {
-            $password=$_POST['password'];
-            $cpassword=$_POST['cpassword'];
+            $password=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['password'])));
+            $cpassword=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['cpassword'])));
 
                 if ($password==$cpassword) {
                     $password=md5($password);
@@ -27,7 +29,7 @@ session_start();
                     $r0=mysqli_query($dbc,$q0);
                     header('Location: login.php?success3');
                 }else{
-                    $msg="Les deux mots de passe ne sont pas identiques";
+                    $msg=$lang['69'];
                 }
         }
         }else{
@@ -76,28 +78,28 @@ session_start();
                             <div class="col-lg">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-2">Réinitialiser le mot de passe</h1>
+                                        <h1 class="h4 text-gray-900 mb-2"><?= $lang['45'] ?></h1>
                                     </div>
                                     <form class="user" action="reset-password.php?email=<?= $email ?>&token=<?= $token ?>" method="post">
                                         <div class="form-group">
                                             <input type="password" class="form-control form-control-user"
-                                            name="password" placeholder="Ajouter un nouveau mot de passe">
+                                            name="password" placeholder="<?= $lang['76'] ?>">
                                         </div>
                                         <div class="form-group">
                                             <input type="password" class="form-control form-control-user"
-                                            name="cpassword" placeholder="Répéter le mot de passe">
+                                            name="cpassword" placeholder="<?= $lang['73'] ?>">
                                         </div>
-                                        <input type="submit" name="submit" class="btn btn-primary btn-user btn-block" value="Mettre à jour le mot de passe">
+                                        <input type="submit" name="submit" class="btn btn-primary btn-user btn-block" value="<?= $lang['77'] ?>">
                                     </form>
                                     <hr>
                                     <div class="text-center">
-                                        <a class="small" href="index.php">Page d'accueil</a>
+                                        <a class="small" href="index.php"><?= $lang['46'] ?></a>
                                     </div>
                                     <div class="text-center">
-                                        <a class="small" href="register.php">Créer un compte!</a>
+                                        <a class="small" href="register.php"><?= $lang['47'] ?></a>
                                     </div>
                                     <div class="text-center">
-                                        <a class="small" href="login.php">Vous avez déjà un compte? S'identifier!</a>
+                                        <a class="small" href="login.php"><?= $lang['48'] ?></a>
                                     </div>
                                 </div>
                             </div>

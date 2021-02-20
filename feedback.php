@@ -1,7 +1,10 @@
-<?php 
-$pageName="Feedback";
-include_once 'connect.php';
+<?php
 session_start();
+
+include_once 'connect.php';
+
+include "config.php";
+$pageName=$lang['13'];
 
 include 'function_inc.php';
 
@@ -11,11 +14,11 @@ include 'function_inc.php';
 
 if (isset($_POST['submit'])) {
     $user_id=$_SESSION['user_id'];
-    $feedback=$_POST['feedback'];
+    $feedback = mysqli_real_escape_string($dbc, htmlentities(trim($_POST['feedback'])));
 
     $query="INSERT INTO `feedback`(`user_id`, `feedback`) VALUES ('$user_id','$feedback')";
     $result=mysqli_query($dbc,$query);
-    $msg="Commentaire ajouté avec succes";
+    $msg=$lang['34'];
 }
 
 
@@ -72,7 +75,7 @@ if (isset($_POST['submit'])) {
 
                     <!-- Page Heading -->
                     <h1 class="h3 mb-2 text-gray-800 text-center"><?= $pageName ?></h1>
-                    <p class="text-center">Nous avons besoin de critiques constructives, de commentaires ou de suggestions pour développer cette plateforme</p>
+                    <p class="text-center"><?= $lang['35'] ?></p>
                     <div class="alert alert-info text-center">
                         « إنما الصدقات للفقراء والمساكين والعاملين عليها والمؤلفة قلوبهم وفي الرقاب والغارمين وفي سبيل الله وابن السبيل فريضة من الله والله عليم حكيم - التوبة »
                     </div>
@@ -80,7 +83,7 @@ if (isset($_POST['submit'])) {
                     <?php
                         if (isset($_SESSION['user_id'])) { ?>
                             
-                    <a class="btn btn-success btn-block mb-2" href="" data-toggle="modal" data-target="#upload">Ajouter "Feedback"</a><br>
+                    <a class="btn btn-success btn-block mb-2" href="" data-toggle="modal" data-target="#upload"><?= $lang['36'] ?></a><br>
 
                             <?php 
                             if(isset($msg)){ ?>
@@ -96,7 +99,7 @@ if (isset($_POST['submit'])) {
                   
                     <!-- Modal Header -->
                     <div class="modal-header">
-                      <h4 class="modal-title">Ajouter "Feedback"</h4>
+                      <h4 class="modal-title"><?= $lang['36'] ?></h4>
                       <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     
@@ -105,16 +108,16 @@ if (isset($_POST['submit'])) {
                       <form class="user" action="feedback.php" method="post">
 
                                 <div class="form-group">
-                                  <textarea class="form-control" rows="5" name="feedback" placeholder="Commentaire" required></textarea>
+                                  <textarea class="form-control" rows="5" name="feedback" placeholder="<?= $lang['37'] ?>" required></textarea>
                                 </div>
 
-                                <input type="submit" name="submit" class="btn btn-success btn-user btn-block" value="Ajouter">
+                                <input type="submit" name="submit" class="btn btn-success btn-user btn-block" value="<?= $lang['38'] ?>">
                             </form>
                     </div>
                     
                     <!-- Modal footer  -->
                     <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= $lang['21'] ?></button>
                     </div>
                     
                   </div>

@@ -1,8 +1,11 @@
 <?php
+session_start();
+
 include_once 'connect.php';
 include 'function_inc.php';
+include "config.php";
 
-session_start();
+
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -31,11 +34,11 @@ $pageName=$user_info['firstname']." ".$user_info['lastname'];
 
 if (isset($_POST['submit'])) {
     $user_id=$_SESSION['user_id'];
-    $domaine=$_POST['domaine'];
-    $filiere=$_POST['filiere'];
-    $wilaya=$_POST['wilaya'];
-    $title=$_POST['title'];
-    $url=$_POST['url'];
+    $domaine=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['domaine'])));
+    $filiere=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['filiere'])));
+    $wilaya=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['wilaya'])));
+    $title=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['title'])));
+    $url=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['url'])));
     include 'uploadfile.php';
 
     if ($url and $file_name) {
@@ -106,10 +109,10 @@ if (isset($_POST['submit'])) {
                     <div class="text-center">
                     <h1 class="h3 mb-2 text-gray-800"><?= $pageName ?></h1>
                     <?php if($user_info['bio']!=""){ ?>
-                    <h4><b>Bio : </b><?= $user_info['bio'] ?></h4>
+                    <h4><b><?= $lang['64'] ?> : </b><?= $user_info['bio'] ?></h4>
                     <?php } ?>
-                    <h4><b>Adresse e-mail : </b><?= $user_info['email'] ?></h4>
-                    <h4><b>Numéro de téléphone : </b></i> <?= $user_info['phone'] ?></h4>
+                    <h4><b><?= $lang['56'] ?> : </b><?= $user_info['email'] ?></h4>
+                    <h4><b><?= $lang['65'] ?> : </b></i> <?= $user_info['phone'] ?></h4>
                     <h4>
                         <?php if($user_info['linkedin']!=""){ ?>
                         <a href="<?= $user_info['linkedin'] ?>" target="_blank"><i class="fab fa-linkedin"></i></a>
@@ -139,22 +142,22 @@ if (isset($_POST['submit'])) {
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">PHD Algeria</h6>
+                            <h6 class="m-0 font-weight-bold text-primary"><?= $lang['1'] ?></h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
-                                            <th>Titre</th>
-                                            <th>Wilaya</th>
-                                            <th>Date</th>
-                                            <th>Voir</th>
-                                            <th>Télécharger</th>
+                                            <th><?= $lang['8'] ?></th>
+                                            <th><?= $lang['66'] ?></th>
+                                            <th><?= $lang['9'] ?></th>
+                                            <th><?= $lang['11'] ?></th>
+                                            <th><?= $lang['12'] ?></th>
                                             <?php if($user_id==$id){ ?>
-                                            <th>Supprimer</th>
+                                            <th><?= $lang['67'] ?></th>
                                             <?php } ?>
+                                            <th><?= $lang['96'] ?></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -170,36 +173,37 @@ if (isset($_POST['submit'])) {
                                             $user_data=getInfoById('users',$id_user);
                                             ?>
                                             <tr>
-                                            <td><?= $row2['id'] ?></td>
                                             <td><?= $row2['title'] ?></td>
                                             <td><?= $wilaya_data['wilaya_name'] ?></td>
                                             <td><?= $row2['date'] ?></td>
                                             <?php if ($row2['url']) { ?>
                                                     <td>
-                                                        <a class="btn btn-dark btn-block" href="<?= $row2['url'] ?>" target="_blank">Voir</a>
+                                                        <a class="btn btn-dark btn-block" href="<?= $row2['url'] ?>" target="_blank"><?= $lang['11'] ?></a>
                                                     </td>
                                             <?php }else{ ?>
                                                 <td>
-                                                    <button class="btn btn-dark btn-block" href="" disabled>Voir</button>
+                                                    <button class="btn btn-dark btn-block" href="" disabled><?= $lang['11'] ?></button>
                                                 </td>
                                             <?php } ?>
 
                                             <?php if ($row2['path']) { ?>
                                                     <td>
-                                                        <a class="btn btn-success btn-block" href="<?= $row2['path'] ?>" target="_blank">Télécharger</a>
+                                                        <a class="btn btn-success btn-block" href="<?= $row2['path'] ?>" target="_blank"><?= $lang['12'] ?></a>
                                                     </td>
                                             <?php }else{ ?>
                                                 <td>
-                                                        <button class="btn btn-success btn-block" href="" disabled>Télécharger</button>
+                                                        <button class="btn btn-success btn-block" href="" disabled><?= $lang['12'] ?></button>
                                                     </td>
                                             <?php } ?>
 
                                             <?php if($user_id==$id){ ?>
                                             <td>
-                                                <a class="btn btn-danger btn-block" href="delete_file.php?id=<?= $row2['id'] ?>">Supprimer</a>
+                                                <a class="btn btn-danger btn-block" href="delete_file.php?id=<?= $row2['id'] ?>"><?= $lang['67'] ?></a>
                                             </td>
                                             <?php } ?>
-                                            
+                                            <td>
+                                                <a class="btn btn-warning btn-block" href="report.php?fid=<?= $row2['id'] ?>"><?= $lang['96'] ?></a>
+                                            </td>
                                         </tr>
                                         <?php } ?>
                                     </tbody>

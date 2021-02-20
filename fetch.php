@@ -1,5 +1,6 @@
 <?php
 //fetch.php
+include "config.php";
 if(isset($_POST["action"]))
 {
  include_once 'connect.php';
@@ -8,7 +9,7 @@ if(isset($_POST["action"]))
  {
   $query = "SELECT * FROM filiere WHERE domaine_id = '".$_POST["query"]."'";
   $result = mysqli_query($dbc, $query);
-  $output .= '<option value="">Choisir la filière</option>';
+  $output .= '<option value="">'.$lang['5'].'</option>';
   while($row = mysqli_fetch_array($result))
   {
    $output .= '<option value="'.$row["id"].'">'.$row["filiere"].'</option>';

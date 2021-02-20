@@ -1,10 +1,12 @@
 <?php 
-$pageName="Mot de passe oublié";
-include_once 'connect.php';
 session_start();
+include_once 'connect.php';
+include "config.php";
+$pageName=$lang['39'];
+
 
 if(isset($_POST['submit'])){
-  $email=$_POST['email'];
+  $email = mysqli_real_escape_string($dbc, htmlentities(trim($_POST['email'])));
 
   $q="SELECT * FROM `users` WHERE `email`='$email'";
   $r=mysqli_query($dbc,$q);
@@ -14,16 +16,14 @@ if(isset($_POST['submit'])){
     $row=mysqli_fetch_assoc($r);
     $token=$row['token'];
 
-    $message="
-      Veuillez cliquer sur le lien ci-dessous:
-      http://localhost/phdalgeria/reset-password.php?email=".$email."&token=".$token;
+    $message=$lang['40']." phdalgeria.com/reset-password.php?email=".$email."&token=".$token;
 
       if(mail($email,"PHD Algeria",$message)){
-      $msg="Veuillez vérifier votre email!";
+      $msg=$lang['41'];
         }
     
   }else{
-    $msg="Aucun compte n'ouvre cet e-mail";
+    $msg=$lang['42'];
   }
 }
  ?>
@@ -68,8 +68,8 @@ if(isset($_POST['submit'])){
                             <div class="col-lg">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-2">Mot de passe oublié?</h1>
-                                        <p class="mb-4">On comprend, il se passe des choses. Entrez simplement votre adresse e-mail ci-dessous et nous vous enverrons un lien pour réinitialiser votre mot de passe!</p>
+                                        <h1 class="h4 text-gray-900 mb-2"><?= $lang['39'] ?></h1>
+                                        <p class="mb-4"><?= $lang['43'] ?></p>
                                     </div>
 
                                     <?php 
@@ -83,19 +83,19 @@ if(isset($_POST['submit'])){
                                         <div class="form-group">
                                             <input type="email" class="form-control form-control-user"
                                                 name="email" aria-describedby="emailHelp"
-                                                placeholder="Entrer l'adresse e-mail...">
+                                                placeholder="<?= $lang['44'] ?>">
                                         </div>
-                                        <input type="submit" name="submit" class="btn btn-primary btn-user btn-block" value="Réinitialiser le mot de passe">
+                                        <input type="submit" name="submit" class="btn btn-primary btn-user btn-block" value="<?= $lang['45'] ?>">
                                     </form>
                                     <hr>
                                     <div class="text-center">
-                                        <a class="small" href="index.php">Page d'accueil</a>
+                                        <a class="small" href="index.php"><?= $lang['46'] ?></a>
                                     </div>
                                     <div class="text-center">
-                                        <a class="small" href="register.php">Créer un compte!</a>
+                                        <a class="small" href="register.php"><?= $lang['47'] ?></a>
                                     </div>
                                     <div class="text-center">
-                                        <a class="small" href="login.php">Vous avez déjà un compte? S'identifier!</a>
+                                        <a class="small" href="login.php"><?= $lang['48'] ?></a>
                                     </div>
                                 </div>
                             </div>

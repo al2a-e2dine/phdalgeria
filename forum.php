@@ -4,23 +4,32 @@ session_start();
 include_once 'connect.php';
 
 include "config.php";
-$pageName=$lang['13'];
+$pageName="PHD Algeria Forum";
 
 include 'function_inc.php';
 
-// if (!isset($_SESSION['user_id'])) {
-//     header('Location: login.php');
-// }
+if (isset($_POST['filtrer'])) {
+    $domaine=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['domaine'])));
+    $filiere=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['filiere'])));
 
-if (isset($_POST['submit'])) {
-    $user_id=$_SESSION['user_id'];
-    $feedback = mysqli_real_escape_string($dbc, htmlentities(trim($_POST['feedback'])));
+    if ($domaine and $filiere) {
+        $q2="SELECT * FROM `post` WHERE `domaine`='$domaine' and `filiere`='$filiere'and archived=0";
+    }elseif ($domaine and !$filiere) {
+        $q2="SELECT * FROM `post` WHERE `domaine`='$domaine' and archived=0";
+    }elseif (!$domaine and $filiere) {
+        $q2="SELECT * FROM `post` WHERE `filiere`='$filiere' and archived=0";
+    }else{
+        $q2="SELECT * FROM `post` where archived=0 order by id desc";
+    }
 
-    $query="INSERT INTO `feedback`(`user_id`, `feedback`) VALUES ('$user_id','$feedback')";
-    $result=mysqli_query($dbc,$query);
-    $msg=$lang['34'];
-}
+    //echo $q2;exit();
+    $r2=mysqli_query($dbc,$q2);
 
+
+    }else{
+        $q2="SELECT * FROM `post` where archived=0 order by id desc";
+        $r2=mysqli_query($dbc,$q2);
+    }
 
  ?>
 
@@ -49,6 +58,8 @@ if (isset($_POST['submit'])) {
     <!-- Custom styles for this page -->
     <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
 </head>
 
 <body id="page-top">
@@ -73,64 +84,138 @@ if (isset($_POST['submit'])) {
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <!-- Page Heading -->
+                    <br>
                     <h1 class="h3 mb-2 text-gray-800 text-center"><?= $pageName ?></h1>
+                    
+                    <?php if (isset($_SESSION['user_id'])) { ?>
+                        <hr>
+                            <a href="add_post.php" class="btn btn-primary btn-block">Publier un sujet</a>
+                            <br>
+                    <?php } ?>
+
+
+                    <form class="user" action="forum.php" method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div class="form-group">
+                                <select class="form-control action" name="domaine" id="domaine">
+                                    <?php if($domaine){ $domaine_info=getInfoById('domaine',$domaine); ?>
+                                        <option value="<?= $domaine_info['id'] ?>"><?= $domaine_info['domaine'] ?></option>
+                                    <?php }else{ ?>
+                                <option value=""><?= $lang['4'] ?></option>
+                                <?php } ?>
+                                <?php 
+                                    $qd="SELECT * FROM `domaine`";
+                                    $rd=mysqli_query($dbc,$qd);
+                                    while ($rowd=mysqli_fetch_assoc($rd)) { ?>
+                                        <option value="<?= $rowd['id'] ?>"><?= $rowd['domaine'] ?></option>
+                                    <?php } ?>
+                                </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-5">
+                                <div class="form-group">
+                                <select class="form-control action" name="filiere" id="filiere">
+                                    <?php if($filiere){ $filiere_info=getInfoById('filiere',$filiere); ?>
+                                        <option value="<?= $filiere_info['id'] ?>"><?= $filiere_info['filiere'] ?></option>
+                                    <?php }else{ ?>
+                                <option value=""><?= $lang['5'] ?></option>
+                                     <?php } ?>
+                                </select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <input type="submit" name="filtrer" class="btn btn-primary btn-user btn-block" value="<?= $lang['7'] ?>">
+                            </div>
+                        </div>
+                                
+                            </form>
+                        <br>
+                            
 
                     <div class="row">
                         <div class="col-sm-8">
                             <h3 class="text-center">Derniers sujets</h3>
+
+                            <?php 
+                            if(isset($_GET['post_deleted'])){ ?>
+                                <div class="alert alert-success">
+                                  <strong><?= $lang['1'] ?>!</strong> Publication supprimé avec succès
+                                </div><br>
+                            <?php } ?>
+
+                            <?php 
+                            //$q2="SELECT * FROM `post` where archived=0 order by id desc";
+                            //$r2=mysqli_query($dbc,$q2);
+                            while ($row=mysqli_fetch_assoc($r2)) {
+                                $userInfo=getInfoById('users',$row['user_id']);
+                                $domaineInfo=getInfoById('domaine',$row['domaine']);
+                                $filiereInfo=getInfoById('filiere',$row['filiere']);
+                                ?>
+                            
+                             
                             <!-- begin -->
                             <div class="card mb-2">
                               <div class="card-body">
-                                <h4 class="card-title" style="color: #2684fe">zamch</h4>
-                                <p style="color: #ffc300">MI > Informatique - 16/02/2021 10:25:12</p>
+                                <a href="profile.php?id=<?= $userInfo['id'] ?>">
+                                <h4 class="card-title" style="color: #2684fe"><?= $userInfo['firstname']." ".$userInfo['lastname'] ?></h4></a>
+                                <p><?= $domaineInfo['domaine'] ?> > <?= $filiereInfo['filiere'] ?> - <?= $row['date'] ?></p>
                                 <hr>
-                                <a href="post.php?1" class="card-link">
-                                <h3 class="card-title" style="color: #ff8b00">Lorem ipsum dolor sit amet</h3>
+                                <a href="post.php?id=<?= $row['id'] ?>" class="card-link">
+                                <h3 class="card-title" style="color: #ff8b00"><?= $row['title'] ?></h3>
                                 </a>
-                                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                                <a href="" class="btn btn-outline-primary btn-block" target="_blank">Voir</a>
+                                <p class="card-text"><?= $row['description'] ?></p>
+
+                                <?php 
+                                if($_SESSION['user_id']==$row['user_id']){ ?>
+                                 <div class="row">
+                                     <div class="col-sm-8">
+                                        <a href="<?= $row['file'] ?>" class="btn btn-outline-info btn-block" target="_blank">Télécharger</a>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <a href="update_post.php?id=<?= $row['id'] ?>" class="btn btn-outline-success btn-block">Modifier</a>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <a href="delete_post.php?id=<?= $row['id'] ?>" class="btn btn-outline-danger btn-block">Supprimer</a>
+                                    </div>
+                                 </div>
+                                <?php }else{ ?>
+                                    <a href="<?= $row['file'] ?>" class="btn btn-outline-info btn-block" target="_blank">Télécharger</a>
+                                <?php } ?>
+                                
                               </div>
                             </div>
                             <!-- end -->
+
+                            <?php } ?>
                         </div>
 
                         <div class="col-sm-4">
                             <h3 class="text-center">Sujets aléatoires</h3>
+                            <?php 
+                            $q="SELECT * FROM `post` where archived=0 order by rand() limit 5";
+                            $r=mysqli_query($dbc,$q);
+                            while ($row=mysqli_fetch_assoc($r)) {
+                                $userInfo=getInfoById('users',$row['user_id']);
+                                $domaineInfo=getInfoById('domaine',$row['domaine']);
+                                $filiereInfo=getInfoById('filiere',$row['filiere']);
+                                ?>
                             <!-- begin -->
                             <div class="card mb-2">
                               <div class="card-body">
-                                <h4 class="card-title" style="color: #2684fe">zamch</h4>
-                                <p style="color: #ffc300">MI > Informatique - 16/02/2021 10:25:12</p>
+                                <a href="profile.php?id=<?= $userInfo['id'] ?>">
+                                <h4 class="card-title" style="color: #2684fe"><?= $userInfo['firstname']." ".$userInfo['lastname'] ?></h4></a>
+                                <p><?= $domaineInfo['domaine'] ?> > <?= $filiereInfo['filiere'] ?> - <?= $row['date'] ?></p>
                                 <hr>
-                                <h3 class="card-title">Lorem ipsum dolor sit amet</h3>
+                                <a href="post.php?id=<?= $row['id'] ?>" class="card-link">
+                                <h3 class="card-title" style="color: #ff8b00"><?= $row['title'] ?></h3>
+                                </a>
                               </div>
                             </div>
                             <!-- end -->
-                            <!-- begin -->
-                            <div class="card mb-2">
-                              <div class="card-body">
-                                <h4 class="card-title" style="color: #2684fe">zamch</h4>
-                                <p style="color: #ffc300">MI > Informatique - 16/02/2021 10:25:12</p>
-                                <hr>
-                                <h3 class="card-title">Lorem ipsum dolor sit amet</h3>
-                              </div>
-                            </div>
-                            <!-- end -->
-                            <!-- begin -->
-                            <div class="card mb-2">
-                              <div class="card-body">
-                                <h4 class="card-title" style="color: #2684fe">zamch</h4>
-                                <p style="color: #ffc300">MI > Informatique - 16/02/2021 10:25:12</p>
-                                <hr>
-                                <h3 class="card-title">Lorem ipsum dolor sit amet</h3>
-                              </div>
-                            </div>
-                            <!-- end -->
+                            <?php } ?>
+                            
                         </div>
                     </div>
                     
@@ -178,3 +263,28 @@ if (isset($_POST['submit'])) {
 </body>
 
 </html>
+
+<script>
+$(document).ready(function(){
+ $('.action').change(function(){
+  if($(this).val() != '')
+  {
+   var action = $(this).attr("id");
+   var query = $(this).val();
+   var result = '';
+   if(action == "domaine")
+   {
+    result = 'filiere';
+   }
+   $.ajax({
+    url:"fetch.php",
+    method:"POST",
+    data:{action:action, query:query},
+    success:function(data){
+     $('#'+result).html(data);
+    }
+   })
+  }
+ });
+});
+</script>

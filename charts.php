@@ -1,7 +1,7 @@
 <?php 
     include_once('connect.php');
-//echo date("Y-m-d"); exit();
-$query = "SELECT DISTINCT `visit_date` FROM `counter`";
+
+    $query = "SELECT DISTINCT `visit_date` FROM `counter`";
 $result = mysqli_query($dbc, $query);
 while ($row=mysqli_fetch_assoc($result)) {
     $day=$row['visit_date'];
@@ -22,51 +22,99 @@ while ($row=mysqli_fetch_assoc($result)) {
 
 }
 
-$labels='';
-$query0 = "SELECT * FROM `charts`";
-$result0 = mysqli_query($dbc, $query0);
-while($row0=mysqli_fetch_assoc($result0)){
-    $date=$row0['date'];
-    $visitor=$row0['visitor'];
-//$labels.='"'.$date.'",';
-$labels.="{ day: '".$date."', visitor: '".$visitor."' },";
+
+$q = "SELECT * FROM `charts`";
+$result = mysqli_query($dbc, $q);
+$rows = array();
+$table = array();
+
+$table['cols'] = array(
+ array(
+  'label' => 'Date', 
+  'type' => 'string'
+ ),
+ array(
+  'label' => 'visiteurs', 
+  'type' => 'number'
+ )
+);
+
+//print_r($table['cols']); exit();
+
+// if($result){
+//     echo"oui"; exit();
+// }else{
+//     echo"non"; exit();
+// }
+
+while($row = mysqli_fetch_array($result)){
+    
+
+ $sub_array = array();
+ $datetime = $row["date"];
+
+ //print_r($datetime); exit();
+
+ $sub_array[] =  array(
+      "v" => $datetime
+     );
+ $sub_array[] =  array(
+      "v" => $row["visitor"]
+     );
+
+ //print_r($sub_array);exit();
+
+ $rows[] =  array(
+     "c" => $sub_array
+    );
 }
-$labels=substr($labels, 0, -1);
-//echo $labels;
+
+$table['rows'] = $rows;
+$jsonTable = json_encode($table);
+
  ?>
  <!DOCTYPE html>
  <html>
  <head>
     <title>Charts</title>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-  <script src="js/bootstrap.bundle.min.js"></script>
-  <script src="js/jquery-3.5.1.slim.min.js"></script>
-  <script src="js/popper.min.js"></script>
-  <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script type="text/javascript">
+   google.charts.load('current', {'packages':['corechart']});
+   google.charts.setOnLoadCallback(drawChart);
+   function drawChart()
+   {
+    var data = new google.visualization.DataTable(<?php echo $jsonTable; ?>);
 
-  <!-- Custom fonts for this template-->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
+    var options = {
+     title:'Cette figure représente le nombre des visiteurs chaque jour',
+     legend:{position:'bottom'},
+     chartArea:{width:'95%', height:'65%'}
+    };
 
-    <!-- Custom styles for this template-->
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    var chart = new google.visualization.LineChart(document.getElementById('line_chart'));
 
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+    chart.draw(data, options);
+   }
+  </script>
+  <style>
+  .page-wrapper
+  {
+   width:1000px;
+   margin:0 auto;
+  }
+  </style>
  </head>
  <body>
  <div class="container">
     <br>
-    <h1 class="text-center">Cette figure représente le nombre des visiteurs chaque jour</h1>
-    <br>
-    <!-- Content Row -->
-                    <div class="row">
-                        <div class="col" id="chart"></div>
-                    </div>
+
+    <div class="page-wrapper">
+   <br />
+   <h2 align="center">Cette figure représente le nombre des visiteurs chaque jour</h2>
+   <div id="line_chart" style="width: 100%; height: 500px"></div>
+  </div>
+
     <hr>
     <div class="text-center">
         <a class="small" href="index.php">Page d'accueil</a>
@@ -84,16 +132,4 @@ $labels=substr($labels, 0, -1);
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
-
-<script>
-Morris.Line({
- element : 'chart',
- data:[<?= $labels ?>],
- xkey:'year',
- ykeys:['value'],
- labels:['Value'],
- hideHover:'auto',
- stacked:true
-});
-</script>
     

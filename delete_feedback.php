@@ -10,9 +10,9 @@ if (!isset($_SESSION['user_id'])) {
 if(isset($_GET['id'])){
     $id=$_GET['id'];
 
-    $q="UPDATE `files` SET `archived`='1' WHERE `id`='$id' and user_id='$user_id'";
+    $q="UPDATE `feedback` SET `archived`='1' WHERE `id`='$id'";
     $r=mysqli_query($dbc,$q);
-    header('location: profile.php?id='.$user_id.'&delete');
+    header('location: profile.php?id=1&feedback_deleted');
 }else{
-    header('location: profile.php?id='.$user_id);
+    header('location: profile.php?id=1&err');
 }

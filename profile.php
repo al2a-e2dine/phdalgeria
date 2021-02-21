@@ -212,6 +212,118 @@ if (isset($_POST['submit'])) {
                         </div>
                     </div>
 
+
+                     
+                    <?php if ($_SESSION['user_id']==1) { ?>
+                        <h1 class="h3 mb-2 text-gray-800"><?= $lang['105'] ?></h1>
+                        <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary"><?= $lang['105'] ?></h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th><?= $lang['8'] ?></th> <!-- titre -->
+                                            <th><?= $lang['11'] ?></th> <!-- voir -->
+                                            <th><?= $lang['12'] ?></th> <!-- télécharger -->
+                                            <th><?= $lang['67'] ?></th> <!-- télécharger -->
+                                            <th><?= $lang['106'] ?></th> <!-- approuvée -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $q2="SELECT * FROM `files` where safe=0";
+                                        $r2=mysqli_query($dbc,$q2);
+                                        while ($row2=mysqli_fetch_assoc($r2)) {
+                                            //$id_wilaya=$row2['wilaya'];
+                                            //$id_user=$row2['user_id'];
+
+                                            //$wilaya_data=getInfoById('algeria_cities',$id_wilaya);
+                                            //$user_data=getInfoById('users',$id_user);
+                                            ?>
+                                            <tr>
+                                            <td><?= $row2['title'] ?></td>
+                                            <?php if ($row2['url']) { ?>
+                                                    <td>
+                                                        <a class="btn btn-dark btn-block" href="<?= $row2['url'] ?>" target="_blank"><?= $lang['11'] ?></a>
+                                                    </td>
+                                            <?php }else{ ?>
+                                                <td>
+                                                    <button class="btn btn-dark btn-block" href="" disabled><?= $lang['11'] ?></button>
+                                                </td>
+                                            <?php } ?>
+
+                                            <?php if ($row2['path']) { ?>
+                                                    <td>
+                                                        <a class="btn btn-success btn-block" href="<?= $row2['path'] ?>" target="_blank"><?= $lang['12'] ?></a>
+                                                    </td>
+                                            <?php }else{ ?>
+                                                <td>
+                                                        <button class="btn btn-success btn-block" href="" disabled><?= $lang['12'] ?></button>
+                                                    </td>
+                                            <?php } ?>
+
+                                            <td>
+                                                <a class="btn btn-danger btn-block" href="unsafe_file.php?fid=<?= $row2['id'] ?>"><?= $lang['67'] ?></a>
+                                            </td>
+
+                                            <td>
+                                                <a class="btn btn-warning btn-block" href="approved.php?fid=<?= $row2['id'] ?>"><?= $lang['106'] ?></a>
+                                            </td>
+                                        </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <?php } ?>
+
+                    <?php if ($_SESSION['user_id']==1) { ?>
+                        <h1 class="h3 mb-2 text-gray-800"><?= $lang['107'] ?></h1>
+                        <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary"><?= $lang['107'] ?></h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th><?= $lang['13'] ?></th> <!-- feedback -->
+                                            <th><?= $lang['67'] ?></th> <!-- delete -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $q2="SELECT * FROM `feedback` where archived=0";
+                                        $r2=mysqli_query($dbc,$q2);
+                                        while ($row2=mysqli_fetch_assoc($r2)) {
+                                            //$id_wilaya=$row2['wilaya'];
+                                            //$id_user=$row2['user_id'];
+
+                                            //$wilaya_data=getInfoById('algeria_cities',$id_wilaya);
+                                            //$user_data=getInfoById('users',$id_user);
+                                            ?>
+                                            <tr>
+                                            <td><?= $row2['feedback'] ?></td>
+                                            <td>
+                                                <a class="btn btn-danger btn-block" href="delete_feedback.php?id=<?= $row2['id'] ?>"><?= $lang['67'] ?></a>
+                                            </td>
+                                        </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <?php } ?>
+                     
+
                 </div>
                 <!-- /.container-fluid -->
 

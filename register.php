@@ -340,7 +340,7 @@ if($num==0){
                             </form>
                             <hr>
                             <a href="<?= $google_client->createAuthUrl() ?>" class="btn btn-google btn-user btn-block">
-                                            <i class="fab fa-google fa-fw"></i> Login with Google
+                                            <i class="fab fa-google fa-fw"></i> <?= $lang['102'] ?>
                                         </a>
                             <hr>
                             <div class="text-center">

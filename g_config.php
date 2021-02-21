@@ -7,8 +7,8 @@
 
 	$google_client->setClientSecret('pMmBRhZ-U_6xxx1AjYmvTg4A');
 
-	//$google_client->setRedirectUri('http://localhost/phdalgeria/register.php');
-	$google_client->setRedirectUri('http://www.phdalgeria.com/register.php');
+	$google_client->setRedirectUri('http://localhost/phdalgeria/register.php');
+	//$google_client->setRedirectUri('http://www.phdalgeria.com/register.php');
 
 	$google_client->addScope('email');
 	$google_client->addScope('profile');

@@ -2,10 +2,9 @@
 session_start();
 include_once 'connect.php';
 include "config.php";
-include 'function_inc.php';
 
 
-$pageName="Modifier un sujet";
+$pageName="Proposer une solution";
 
 
 if (!isset($_SESSION['user_id'])) {
@@ -14,44 +13,27 @@ if (!isset($_SESSION['user_id'])) {
     $user_id=$_SESSION['user_id'];
 }
 
+
 if (!isset($_GET['id'])) {
     header('Location: forum.php');
 }else{
-    $p_id=$_GET['id'];
+    $post_id=$_GET['id'];
 }
 
-$postInfo=getInfoById('post',$p_id);
-if ($postInfo['user_id']==$user_id and $postInfo['archived']=0) {
-    if(isset($_POST['submit'])){
-$title=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['title'])));
-$description=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['description'])));
-$domaine=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['domaine'])));
-$filiere=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['filiere'])));
+if(isset($_POST['submit'])){
+$comment=mysqli_real_escape_string($dbc, htmlentities(trim($_POST['description'])));
 include 'uploadfile.php';
 
-//echo $file_name; exit();
-if ($file_name=="") {
-    $q="UPDATE `post` SET `user_id`='$user_id',`domaine`='$domaine',`filiere`='$filiere',`title`='$title',`description`='$description' WHERE `id`='$p_id'";
-}else{
-    $q="UPDATE `post` SET `user_id`='$user_id',`domaine`='$domaine',`filiere`='$filiere',`title`='$title',`description`='$description',`file`='$file_name' WHERE `id`='$p_id'";
-}
-
-//echo $q; exit();
+$q="INSERT INTO `comment`(`user_id`, `post_id`, `comment`, `file`) VALUES ('$user_id','$post_id','$comment','$file_name')";
 $r=mysqli_query($dbc,$q);
 
 if ($r) {
-    $msg="Le processus de modification d'un sujet a réussi";
+    $msg="Le processus d'ajout d'un commentaire a réussi";
 }else{
     $msg="Il y a une erreur";
 }
 
 }
-}else{
-    header('Location: forum.php');
-}
-
-
-
 ?>
 
 <!DOCTYPE html>
@@ -101,45 +83,22 @@ if ($r) {
                                 </div>
                             <?php } ?>
                             
-                            <form class="user" action="update_post.php?id=<?= $p_id ?>" method="post" enctype="multipart/form-data">
+                            <form class="user" action="add_comment.php?id=<?= $post_id ?>" method="post" enctype="multipart/form-data">
+                                
                                 <div class="form-group">
-                                <select class="form-control action" name="domaine" id="domaine" required>
-                                <option value="<?= $postInfo['domaine'] ?>"><?= $lang['4'] ?></option>
-                                <?php 
-                                    $qd="SELECT * FROM `domaine`";
-                                    $rd=mysqli_query($dbc,$qd);
-                                    while ($rowd=mysqli_fetch_assoc($rd)) { ?>
-                                        <option value="<?= $rowd['id'] ?>"><?= $rowd['domaine'] ?></option>
-                                    <?php } ?>
-                                </select>
-                                </div>
-
-                                <div class="form-group">
-                                <select class="form-control action" name="filiere" id="filiere" required>
-                                <option value="<?= $postInfo['filiere'] ?>"><?= $lang['5'] ?></option>
-                                </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <input type="text" class="form-control form-control-user" name="title"
-                                        value="<?= $postInfo['title'] ?>" required>
-                                </div>
-                                <div class="form-group">
-                                  <textarea class="form-control" rows="5" name="description" required>
-                                      <?= $postInfo['description'] ?>
-                                  </textarea>
+                                  <textarea class="form-control" rows="5" name="description" placeholder="Déscription" required></textarea>
                                 </div>
 
                                 <div class="custom-file mb-3">
-                                 <input type="file" class="custom-file-input" id="uploadFile" name="fileToUpload">
+                                 <input type="file" class="custom-file-input" id="uploadFile" name="fileToUpload" required>
                                  <label class="custom-file-label" for="uploadFile"><?= $lang['29'] ?></label>
                                  </div>
 
-                                <input type="submit" name="submit" class="btn btn-success btn-user btn-block" value="Modifier">
+                                <input type="submit" name="submit" class="btn btn-primary btn-user btn-block" value="Ajouter">
                             </form>
                             <hr>
                             <div class="text-center">
-                                <a class="small" href="post.php?id=<?= $p_id ?>">Retour</a>
+                                <a class="small" href="post.php?id=<?= $post_id ?>">Retour</a>
                             </div>
                             <div class="text-center">
                                 <a class="small" href="forum.php">PHD Algeria Forum</a>

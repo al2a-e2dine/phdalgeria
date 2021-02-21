@@ -4,7 +4,7 @@ session_start();
 include_once 'connect.php';
 
 include "config.php";
-$pageName="قائمة مواقع الجامعات الجزائرية 48 ولاية";
+$pageName= $lang['103'];
 
 include 'function_inc.php';
 
@@ -71,6 +71,7 @@ if (isset($_POST['searchbtn'])) {
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <!-- Page Heading -->
+                    <br>
                     <h1 class="h3 mb-2 text-gray-800 text-center"><?= $pageName ?></h1>
                     <hr>
 
@@ -82,7 +83,7 @@ if (isset($_POST['searchbtn'])) {
                               </div>
                             </div>
                             <div class="col-sm-2">
-                                <input type="submit" name="searchbtn" class="btn btn-success btn-block" value="Recherche">
+                                <input type="submit" name="searchbtn" class="btn btn-success btn-block" value="<?= $lang['104'] ?>">
                             </div>
                         </div>
                     </form>

@@ -4,22 +4,37 @@ session_start();
 include_once 'connect.php';
 
 include "config.php";
-$pageName=$lang['13'];
+
 
 include 'function_inc.php';
 
-// if (!isset($_SESSION['user_id'])) {
-//     header('Location: login.php');
-// }
+if (isset($_GET['id'])) {
+    $id=$_GET['id'];
 
-if (isset($_POST['submit'])) {
-    $user_id=$_SESSION['user_id'];
-    $feedback = mysqli_real_escape_string($dbc, htmlentities(trim($_POST['feedback'])));
+    $q="SELECT * FROM `post` where id='$id'";
+    $r=mysqli_query($dbc,$q);
+    $num=mysqli_num_rows($r);
 
-    $query="INSERT INTO `feedback`(`user_id`, `feedback`) VALUES ('$user_id','$feedback')";
-    $result=mysqli_query($dbc,$query);
-    $msg=$lang['34'];
+    if($num==0){
+        header('location: forum.php');
+    }
+
+}else{
+    header('location: forum.php');
 }
+
+$postInfo=getInfoById('post',$id);
+
+if ($postInfo['archived']==1) {
+    header('location: forum.php');
+}
+
+$pageName=$postInfo['title'];
+
+$userInfo=getInfoById('users',$postInfo['user_id']);
+$domaineInfo=getInfoById('domaine',$postInfo['domaine']);
+$filiereInfo=getInfoById('filiere',$postInfo['filiere']);
+
 
 
  ?>
@@ -70,29 +85,49 @@ if (isset($_POST['submit'])) {
                     include 'topbar.html';
                 ?>
 
+                <br>
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <!-- Page Heading -->
                     <h1 class="h3 mb-2 text-gray-800 text-center"><?= $pageName ?></h1>
+
+                    <?php if (isset($_SESSION['user_id'])) { ?>
+                        <hr>
+                            <a href="add_post.php" class="btn btn-primary btn-block">Publier un sujet</a>
+                            <br>
+                    <?php } ?>
 
                     <div class="row">
                         <div class="col-sm">
                             <!-- begin -->
                             <div class="card mb-2">
                               <div class="card-body">
-                                <h4 class="card-title" style="color: #2684fe">zamch</h4>
-                                <p style="color: #ffc300">MI > Informatique - 16/02/2021 10:25:12</p>
+                                <a href="profile.php?id=<?= $userInfo['id'] ?>">
+                                <h4 class="card-title" style="color: #2684fe"><?= $userInfo['firstname']." ".$userInfo['lastname'] ?></h4></a>
+                                <p><?= $domaineInfo['domaine'] ?> > <?= $filiereInfo['filiere'] ?> - <?= $postInfo['date'] ?></p>
                                 <hr>
-                                <a href="post.php?1" class="card-link">
-                                <h3 class="card-title" style="color: #ff8b00">Lorem ipsum dolor sit amet</h3>
+                                <a href="post.php?id=<?= $postInfo['id'] ?>" class="card-link">
+                                <h3 class="card-title" style="color: #ff8b00"><?= $postInfo['title'] ?></h3>
                                 </a>
-                                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                                <a href="" class="btn btn-outline-primary btn-block" target="_blank">Voir</a>
+                                <p class="card-text"><?= $postInfo['description'] ?></p>
+                                <!-- <a href="<?= $postInfo['file'] ?>" class="btn btn-outline-success btn-block" target="_blank">Télécharger</a> -->
+
+                                <?php 
+                                if($_SESSION['user_id']==$postInfo['user_id']){ ?>
+                                 <div class="row">
+                                     <div class="col-sm-8">
+                                        <a href="<?= $postInfo['file'] ?>" class="btn btn-outline-info btn-block" target="_blank">Télécharger</a>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <a href="update_post.php?id=<?= $postInfo['id'] ?>" class="btn btn-outline-success btn-block">Modifier</a>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <a href="delete_post.php?id=<?= $postInfo['id'] ?>" class="btn btn-outline-danger btn-block">Supprimer</a>
+                                    </div>
+                                 </div>
+                                <?php }else{ ?>
+                                    <a href="<?= $postInfo['file'] ?>" class="btn btn-outline-info btn-block" target="_blank">Télécharger</a>
+                                <?php } ?>
                               </div>
                             </div>
                             <!-- end -->
@@ -102,36 +137,91 @@ if (isset($_POST['submit'])) {
                     <div class="row">
                         <div class="col-sm">
                             <h3 class="text-center">Commentaires</h3>
+
+                            <?php 
+                            if(isset($_GET['comment_deleted'])){ ?>
+                                <div class="alert alert-success">
+                                  <strong><?= $lang['1'] ?>!</strong> Commentaire supprimé avec succès
+                                </div><br>
+                            <?php } ?>
+
+                            <?php if (isset($_SESSION['user_id'])) { ?>
+                        <hr>
+                            <a href="add_comment.php?id=<?= $id ?>" class="btn btn-info btn-block">Proposer une solution</a>
+                            <br>
+                    <?php } ?>
+
+                            <?php 
+                            $q="SELECT * FROM `comment` where post_id='$id' and archived=0 order by id desc";
+                            $r=mysqli_query($dbc,$q);
+                            while ($row=mysqli_fetch_assoc($r)) {
+                                $userInfo=getInfoById('users',$row['user_id']);
+                                $postInfo=getInfoById('post',$id);
+                                //$domaineInfo=getInfoById('domaine',$row['domaine']);
+                                //$filiereInfo=getInfoById('filiere',$row['filiere']);
+                                ?>
+
                             <!-- begin -->
                             <div class="card mb-2">
                               <div class="card-body">
-                                <h4 class="card-title" style="color: #2684fe">zamch</h4>
-                                <p style="color: #ffc300">16/02/2021 10:25:12</p>
+
+                                <?php 
+                                    $q0="SELECT * FROM `reaction` WHERE `post_id`='$id' and reaction=1";
+                                    $r0=mysqli_query($dbc,$q0);
+                                    $num0=mysqli_num_rows($r0);
+                                 ?>
+
+                                <div class="row">
+                                    <div class="col-sm-1">
+                                        <a href="like.php?id=<?= $id ?>" class="btn btn-success btn-block"><?= $num0 ?> <i class="fas fa-thumbs-up"></i></a>
+                                    </div>
+                                    <div class="col-sm-11">
+                                        <a href="profile.php?id=<?= $userInfo['id'] ?>">
+                                        <h4 class="card-title" style="color: #2684fe"><?= $userInfo['firstname']." ".$userInfo['lastname'] ?></h4>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <?php 
+                                    $q0="SELECT * FROM `reaction` WHERE `post_id`='$id' and reaction=2";
+                                    $r0=mysqli_query($dbc,$q0);
+                                    $num0=mysqli_num_rows($r0);
+                                 ?>
+
+                                <div class="row">
+                                    <div class="col-sm-1">
+                                        <a href="dislike.php?id=<?= $id ?>" class="btn btn-danger btn-block"><?= $num0 ?> <i class="fas fa-thumbs-down"></i></a>
+                                    </div>
+                                    <div class="col-sm-11">
+                                        <p><?= $row['date'] ?></p>
+                                    </div>
+                                </div>
+
+                                
+                                
                                 <hr>
-                                <h3 class="card-title">Lorem ipsum dolor sit amet</h3>
+                                <p class="card-text"><?= $row['comment'] ?></p>
+                                <!-- <a href="<?= $row['file'] ?>" class="btn btn-outline-success btn-block" target="_blank">Télécharger</a> -->
+
+                                <?php 
+                                if($_SESSION['user_id']==$row['user_id']){ ?>
+                                 <div class="row">
+                                     <div class="col-sm-10">
+                                        <a href="<?= $row['file'] ?>" class="btn btn-outline-success btn-block" target="_blank">Télécharger</a>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <a href="delete_comment.php?id=<?= $row['id'] ?>" class="btn btn-outline-danger btn-block">Supprimer</a>
+                                    </div>
+                                 </div>
+                                <?php }else{ ?>
+                                    <a href="<?= $row['file'] ?>" class="btn btn-outline-success btn-block" target="_blank">Télécharger</a>
+                                <?php } ?>
                               </div>
                             </div>
                             <!-- end -->
-                            <!-- begin -->
-                            <div class="card mb-2">
-                              <div class="card-body">
-                                <h4 class="card-title" style="color: #2684fe">zamch</h4>
-                                <p style="color: #ffc300">16/02/2021 10:25:12</p>
-                                <hr>
-                                <h3 class="card-title">Lorem ipsum dolor sit amet</h3>
-                              </div>
-                            </div>
-                            <!-- end -->
-                            <!-- begin -->
-                            <div class="card mb-2">
-                              <div class="card-body">
-                                <h4 class="card-title" style="color: #2684fe">zamch</h4>
-                                <p style="color: #ffc300">16/02/2021 10:25:12</p>
-                                <hr>
-                                <h3 class="card-title">Lorem ipsum dolor sit amet</h3>
-                              </div>
-                            </div>
-                            <!-- end -->
+
+                            <?php } ?>
+                            
                         </div>
                     </div>
                     

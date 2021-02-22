@@ -103,11 +103,11 @@ $filiereInfo=getInfoById('filiere',$postInfo['filiere']);
                             <div class="card mb-2">
                               <div class="card-body">
                                 <a href="profile.php?id=<?= $userInfo['id'] ?>">
-                                <h4 class="card-title" style="color: #2684fe"><?= $userInfo['firstname']." ".$userInfo['lastname'] ?></h4></a>
+                                <h6 class="card-title" style="color: #2684fe"><?= $userInfo['firstname']." ".$userInfo['lastname'] ?></h6></a>
                                 <p><?= $domaineInfo['domaine'] ?> > <?= $filiereInfo['filiere'] ?> - <?= $postInfo['date'] ?></p>
                                 <hr>
                                 <a href="post.php?id=<?= $postInfo['id'] ?>" class="card-link">
-                                <h3 class="card-title" style="color: #ff8b00"><?= $postInfo['title'] ?></h3>
+                                <h5 class="card-title" style="color: #ff8b00"><?= $postInfo['title'] ?></h5>
                                 </a>
                                 <p class="card-text"><?= $postInfo['description'] ?></p>
                                 <!-- <a href="<?= $postInfo['file'] ?>" class="btn btn-outline-success btn-block" target="_blank">Télécharger</a> -->

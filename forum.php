@@ -159,11 +159,11 @@ if (isset($_POST['filtrer'])) {
                             <div class="card mb-2">
                               <div class="card-body">
                                 <a href="profile.php?id=<?= $userInfo['id'] ?>">
-                                <h4 class="card-title" style="color: #2684fe"><?= $userInfo['firstname']." ".$userInfo['lastname'] ?></h4></a>
+                                <h6 class="card-title" style="color: #2684fe"><?= $userInfo['firstname']." ".$userInfo['lastname'] ?></h6></a>
                                 <p><?= $domaineInfo['domaine'] ?> > <?= $filiereInfo['filiere'] ?> - <?= $row['date'] ?></p>
                                 <hr>
                                 <a href="post.php?id=<?= $row['id'] ?>" class="card-link">
-                                <h3 class="card-title" style="color: #ff8b00"><?= $row['title'] ?></h3>
+                                <h5 class="card-title" style="color: #ff8b00"><?= $row['title'] ?></h5>
                                 </a>
                                 <p class="card-text"><?= $row['description'] ?></p>
 
@@ -205,11 +205,11 @@ if (isset($_POST['filtrer'])) {
                             <div class="card mb-2">
                               <div class="card-body">
                                 <a href="profile.php?id=<?= $userInfo['id'] ?>">
-                                <h4 class="card-title" style="color: #2684fe"><?= $userInfo['firstname']." ".$userInfo['lastname'] ?></h4></a>
+                                <h6 class="card-title" style="color: #2684fe"><?= $userInfo['firstname']." ".$userInfo['lastname'] ?></h6></a>
                                 <p><?= $domaineInfo['domaine'] ?> > <?= $filiereInfo['filiere'] ?> - <?= $row['date'] ?></p>
                                 <hr>
                                 <a href="post.php?id=<?= $row['id'] ?>" class="card-link">
-                                <h3 class="card-title" style="color: #ff8b00"><?= $row['title'] ?></h3>
+                                <h5 class="card-title" style="color: #ff8b00"><?= $row['title'] ?></h5>
                                 </a>
                               </div>
                             </div>
